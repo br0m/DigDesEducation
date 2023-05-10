@@ -1,4 +1,4 @@
 package com.digdes.java2023.dto.team;
 
-public class TaskDto {
+public class TeamDto {
 }
