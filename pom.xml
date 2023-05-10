@@ -33,7 +33,7 @@
                     <finalName>project-exec</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>Main</mainClass>
+                            <mainClass>com.digdes.java2023.main.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
