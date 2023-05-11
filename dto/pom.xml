@@ -10,5 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dto</artifactId>
+    <dependencies>
+    </dependencies>
 
 </project>

@@ -1,6 +1,7 @@
 package com.digdes.java2023.model;
 
-import com.digdes.java2023.model.enums.MemberStatus;
+
+import com.digdes.java2023.dto.enums.MemberStatus;
 
 public class Member {
     private long id;

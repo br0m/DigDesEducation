@@ -1,6 +1,6 @@
 package com.digdes.java2023.model;
 
-import com.digdes.java2023.model.enums.MemberRole;
+import com.digdes.java2023.dto.enums.MemberRole;
 
 import java.util.Map;
 

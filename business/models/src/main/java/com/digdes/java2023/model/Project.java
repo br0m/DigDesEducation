@@ -1,6 +1,7 @@
 package com.digdes.java2023.model;
 
-import com.digdes.java2023.model.enums.ProjectStatus;
+
+import com.digdes.java2023.dto.enums.ProjectStatus;
 
 public class Project {
     private long id;

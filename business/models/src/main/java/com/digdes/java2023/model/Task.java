@@ -1,6 +1,6 @@
 package com.digdes.java2023.model;
 
-import com.digdes.java2023.model.enums.TaskStatus;
+import com.digdes.java2023.dto.enums.TaskStatus;
 
 import java.time.LocalDateTime;
 
