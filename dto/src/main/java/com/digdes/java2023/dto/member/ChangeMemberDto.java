@@ -6,6 +6,7 @@ public class ChangeMemberDto extends OperationByIdMemberDto {
 
     private String newFirstName;
     private String newLastName;
+    private String newPatronymic;
     private String newJobTitle;
     private String newAccount;
     private String newEmail;
@@ -26,6 +27,10 @@ public class ChangeMemberDto extends OperationByIdMemberDto {
     public void setNewLastName(String newLastName) {
         this.newLastName = newLastName;
     }
+
+    public String getNewPatronymic() { return newPatronymic; }
+
+    public void setNewPatronymic(String newPatronymic) { this.newPatronymic = newPatronymic; }
 
     public String getNewJobTitle() {
         return newJobTitle;

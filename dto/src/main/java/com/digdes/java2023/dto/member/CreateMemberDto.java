@@ -6,6 +6,7 @@ public class CreateMemberDto {
 
     private String firstName;
     private String lastName;
+    private String patronymic;
     private String jobTitle;
     private String account;
     private String email;
@@ -25,6 +26,14 @@ public class CreateMemberDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public void setPatronymic(String patronymic) {
+        this.patronymic = patronymic;
     }
 
     public String getJobTitle() {
