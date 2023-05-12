@@ -14,8 +14,7 @@
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>dto</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${revision}${changelist}</version>
         </dependency>
     </dependencies>
 
