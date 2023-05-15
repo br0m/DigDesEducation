@@ -1,16 +1,11 @@
 package com.digdes.java2023.dto.member;
 
-import com.digdes.java2023.dto.enums.MemberStatus;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class FindMemberDto {
 
     private String findText;
-
-    public String getFindText() {
-        return findText;
-    }
-
-    public void setFindText(String findText) {
-        this.findText = findText;
-    }
 }
