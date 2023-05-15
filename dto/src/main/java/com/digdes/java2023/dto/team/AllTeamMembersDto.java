@@ -10,4 +10,10 @@ public class AllTeamMembersDto {
     {
         memberAndRoleList.add(memberAndRole);
     }
+    public List<Map<String, String>> getMemberAndRoleList() {
+        return memberAndRoleList;
+    }
+    public void setMemberAndRoleList(List<Map<String, String>> memberAndRoleList) {
+        this.memberAndRoleList = memberAndRoleList;
+    }
 }

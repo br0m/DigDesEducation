@@ -9,4 +9,10 @@ public class FindProjectResultDto {
     public void add(ProjectDto projectDto) {
         projectDtoList.add(projectDto);
     }
+    public List<ProjectDto> getProjectDtoList() {
+        return projectDtoList;
+    }
+    public void setProjectDtoList(List<ProjectDto> projectDtoList) {
+        this.projectDtoList = projectDtoList;
+    }
 }

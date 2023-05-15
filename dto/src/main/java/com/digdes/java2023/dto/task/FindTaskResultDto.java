@@ -9,4 +9,10 @@ public class FindTaskResultDto {
     {
         taskDtoList.add(taskDto);
     }
+    public List<TaskDto> getTaskDtoList() {
+        return taskDtoList;
+    }
+    public void setTaskDtoList(List<TaskDto> taskDtoList) {
+        this.taskDtoList = taskDtoList;
+    }
 }

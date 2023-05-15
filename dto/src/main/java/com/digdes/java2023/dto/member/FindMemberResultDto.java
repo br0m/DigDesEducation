@@ -9,4 +9,12 @@ public class FindMemberResultDto {
     public void add(MemberDto memberDto) {
         memberDtoList.add(memberDto);
     }
+
+    public List<MemberDto> getMemberDtoList() {
+        return memberDtoList;
+    }
+
+    public void setMemberDtoList(List<MemberDto> memberDtoList) {
+        this.memberDtoList = memberDtoList;
+    }
 }
