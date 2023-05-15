@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MemberRepositoryImpl implements MemberRepository {
 
@@ -20,11 +21,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     public MemberRepositoryImpl() {
         members = getAll();
-
-        if (members.size() != 0)
-            id = members.get(members.size() - 1).getId() + 1;
-        else
-            id = 0;
+        id = members.size();
     }
 
     @Override
@@ -81,11 +78,8 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member getById(long id) {
-        for (Member member : members) {
-            if (member.getId() == id)
-                return member;
-        }
-        return null;
+        Optional<Member> memberById = members.stream().filter(member -> member.getId()==id).findFirst();
+        return memberById.orElse(null);
     }
 
     @Override
@@ -109,12 +103,12 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member deleteById(long id) {
-        for (Member member : members) {
-            if (member.getId() == id) {
-                member.setStatus(MemberStatus.REMOVED);
-                writeMembers(members);
-                return member;
-            }
+        Member member=getById(id);
+        if(member!=null && member.getStatus()!=MemberStatus.REMOVED)
+        {
+            member.setStatus(MemberStatus.REMOVED);
+            writeMembers(members);
+            return member;
         }
         return null;
     }
