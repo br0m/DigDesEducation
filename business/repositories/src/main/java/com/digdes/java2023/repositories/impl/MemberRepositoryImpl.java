@@ -3,20 +3,23 @@ package com.digdes.java2023.repositories.impl;
 import com.digdes.java2023.dto.enums.MemberStatus;
 import com.digdes.java2023.model.Member;
 import com.digdes.java2023.repositories.MemberRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class MemberRepositoryImpl implements MemberRepository {
 
+    private static List<Member> members = new ArrayList<>();
     private static long id;
-    private static final File file = new File("memberStorage.json");
+    private static final String fileName = "memberStorage.json";
 
     public MemberRepositoryImpl() {
-        List<Member> members = new ArrayList<>(getAll());
+        members = getAll();
 
         if (members.size() != 0)
             id = members.get(members.size() - 1).getId() + 1;
@@ -26,27 +29,15 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member createMember(Member member) {
-        String memberJson;
-        ObjectMapper objectMapper = new ObjectMapper();
         member.setId(id++);
-
-        try (FileWriter fileWriter = new FileWriter(file, true)) {
-            memberJson = objectMapper.writeValueAsString(member);
-            if (member.getId() != 0)
-                memberJson = "\n" + memberJson;
-
-            fileWriter.write(memberJson);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        members.add(member);
+        writeMembers(members);
 
         return member;
     }
 
     @Override
     public Member updateMember(Member member) {
-        List<Member> members = new ArrayList<>(getAll());
-
         for (Member oldMember : members) {
             if (oldMember.getId() == member.getId()) {
 
@@ -78,7 +69,6 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<Member> findMember(String findText) {
-        List<Member> members = new ArrayList<>(getAll());
         List<Member> findMembers = new ArrayList<>();
 
         for (Member member : members) {
@@ -91,7 +81,6 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member getById(long id) {
-        List<Member> members = new ArrayList<>(getAll());
         for (Member member : members) {
             if (member.getId() == id)
                 return member;
@@ -101,17 +90,18 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<Member> getAll() {
-        String memberJson;
-        List<Member> members = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
+        if (members.size()==0) {
+            String membersJson;
+            ObjectMapper objectMapper = new ObjectMapper();
 
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                memberJson = scanner.nextLine();
-                members.add(objectMapper.readValue(memberJson, Member.class));
+            try {
+                membersJson = new String(Files.readAllBytes(Path.of(fileName)));
+                if (!membersJson.isEmpty())
+                    members = objectMapper.readValue(membersJson, new TypeReference<>() {
+                    });
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
         return members;
@@ -119,30 +109,23 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member deleteById(long id) {
-        List<Member> members = new ArrayList<>(getAll());
-        for (int i = 0; i < members.size(); i++) {
-            if (members.get(i).getId() == id) {
-                members.remove(i);
+        for (Member member : members) {
+            if (member.getId() == id) {
+                member.setStatus(MemberStatus.REMOVED);
                 writeMembers(members);
-                return members.get(i);
+                return member;
             }
         }
         return null;
     }
 
     private void writeMembers(List<Member> members) {
-        String memberJson;
+        String membersJson;
         ObjectMapper objectMapper = new ObjectMapper();
 
-        try (FileWriter fileWriter = new FileWriter(file, false)) {
-            for (Member member : members) {
-                memberJson = objectMapper.writeValueAsString(member);
-                if (member.getId() != 0)
-                    memberJson = "\n" + memberJson;
-
-                fileWriter.write(memberJson);
-            }
-
+        try {
+            membersJson = objectMapper.writeValueAsString(members);
+            Files.writeString(Path.of(fileName), membersJson);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
