@@ -1,5 +1,7 @@
 package com.digdes.java2023.dto.task;
 
+import com.digdes.java2023.dto.enums.TaskStatus;
+import com.digdes.java2023.dto.member.MemberDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,10 +12,8 @@ public class TaskDto {
     private long id;
     private String title;
     private String description;
-    private String responsibleMember;
-    private String deadline;
-    private String status;
-    private String author;
-    private String creationDate;
-    private String lastChangeDate;
+    private MemberDto responsibleMember;
+    private long hoursCost;     //Трудозатраты - оценка, сколько в часах необходимо на ее исполнение. (обязательное поле)
+    private TaskStatus status;
+    private MemberDto author;
 }

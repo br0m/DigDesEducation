@@ -9,17 +9,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class FindTaskDto {
+public class FindTaskDto extends TaskViewDto{
 
-    private long id;
-    private String title;
-    private String description;
-    private String responsibleMember;
-    private LocalDateTime deadline;
     private List<TaskStatus> taskStatusList;
-    private String author;
-    private LocalDateTime creationDate;
-    private LocalDateTime lastChangeDate;
     private TaskTimeFindParam creationPeriod;
     private TaskTimeFindParam deadlinePeriod;
 }

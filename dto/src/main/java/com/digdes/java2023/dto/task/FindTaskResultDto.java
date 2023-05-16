@@ -6,9 +6,9 @@ import java.util.List;
 @Getter
 @Setter
 public class FindTaskResultDto {
-    private List<TaskDto> taskDtoList;
+    private List<TaskViewDto> taskDtoList;
 
-    public void add(TaskDto taskDto)
+    public void add(TaskViewDto taskDto)
     {
         taskDtoList.add(taskDto);
     }
