@@ -12,25 +12,16 @@ public class Main {
 
         MemberRepository memberRepository = new MemberRepositoryImpl();
 
-        Member member = new Member();
-        member.setFirstName("Иван");
-        member.setLastName("Иванов");
-        member.setPatronymic("Иванович");
-        member.setAccount("ivanov");
-        member.setJobTitle("Developer");
-        member.setEmail("ivanov@mail.ru");
-        member.setStatus(MemberStatus.ACTIVE);
+        Member member = Member.builder().firstName("Иван").lastName("Иванов").patronymic("Иванович").account("ivanov").jobTitle("Developer").email("ivanov@mail.ru").status(MemberStatus.ACTIVE).build();
         member=memberRepository.createMember(member);
 
-        Member member2 = new Member();
-        member2.setId(0);
-        member2.setJobTitle("Tester");
+        Member member2 = Member.builder().id(member.getId()).firstName(member.getFirstName()).lastName(member.getLastName()).patronymic(member.getPatronymic()).jobTitle("Tester").status(member.getStatus()).build();
         member2=memberRepository.updateMember(member2);
 
-        List<Member> list = memberRepository.findMember("Иван");
+        List<Member> list = memberRepository.findMember(member.getFirstName());
 
-        Member member3 = memberRepository.getById(1);
-        Member member4 = memberRepository.deleteById(0);
+        Member member3 = memberRepository.getById(member2.getId());
+        Member member4 = memberRepository.deleteById(member2.getId());
 
     }
 }

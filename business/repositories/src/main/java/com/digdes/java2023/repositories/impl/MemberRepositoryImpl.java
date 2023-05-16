@@ -15,49 +15,43 @@ import java.util.Optional;
 
 public class MemberRepositoryImpl implements MemberRepository {
 
-    private static List<Member> members = new ArrayList<>();
+    private static List<Member> members;
     private static long id;
     private static final String fileName = "memberStorage.json";
 
     public MemberRepositoryImpl() {
         members = getAll();
-        id = members.size();
+        if(members!=null)
+            id = members.size();
     }
 
     @Override
     public Member createMember(Member member) {
+        if(members==null)
+            return null;
+
         member.setId(id++);
         members.add(member);
         writeMembers(members);
-
         return member;
     }
 
     @Override
     public Member updateMember(Member member) {
+        if(members==null)
+            return null;
+
         for (Member oldMember : members) {
             if (oldMember.getId() == member.getId()) {
 
                 if (oldMember.getStatus() == MemberStatus.REMOVED)
                     return null;
 
-                if (member.getAccount() != null)
-                    oldMember.setAccount(member.getAccount());
-                if (member.getEmail() != null)
-                    oldMember.setEmail(member.getEmail());
-                if (member.getStatus() != null)
-                    oldMember.setStatus(member.getStatus());
-                if (member.getFirstName() != null)
-                    oldMember.setFirstName(member.getFirstName());
-                if (member.getLastName() != null)
-                    oldMember.setLastName(member.getLastName());
-                if (member.getPatronymic() != null)
-                    oldMember.setPatronymic(member.getPatronymic());
-                if (member.getJobTitle() != null)
-                    oldMember.setJobTitle(member.getJobTitle());
-
+                long id = oldMember.getId();
+                members.remove((int) id);
+                members.add((int) id, member);
                 writeMembers(members);
-                return oldMember;
+                return member;
             }
         }
 
@@ -66,35 +60,48 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<Member> findMember(String findText) {
+        if(members==null)
+            return null;
+
         List<Member> findMembers = new ArrayList<>();
 
         for (Member member : members) {
-            if ((member.getFirstName().contains(findText) || member.getLastName().contains(findText) || member.getPatronymic().contains(findText) || member.getAccount().contains(findText) || member.getEmail().contains(findText)) && member.getStatus() == MemberStatus.ACTIVE) {
+            if ((isContains(member.getLastName(), findText) || isContains(member.getFirstName(), findText) || isContains(member.getPatronymic(), findText) || isContains(member.getAccount(), findText) || isContains(member.getEmail(), findText)) && member.getStatus() == MemberStatus.ACTIVE) {
                 findMembers.add(member);
             }
         }
         return findMembers;
     }
 
+    private boolean isContains(String param, String text)
+    {
+        return param!=null && param.contains(text);
+    }
+
     @Override
     public Member getById(long id) {
+        if(members==null)
+            return null;
+
         Optional<Member> memberById = members.stream().filter(member -> member.getId()==id).findFirst();
         return memberById.orElse(null);
     }
 
     @Override
     public List<Member> getAll() {
-        if (members.size()==0) {
+        if (members==null) {
             String membersJson;
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
                 membersJson = new String(Files.readAllBytes(Path.of(fileName)));
+                members=new ArrayList<>();
                 if (!membersJson.isEmpty())
                     members = objectMapper.readValue(membersJson, new TypeReference<>() {
                     });
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                System.out.println("Can't read members from " + fileName);
+                return null;
             }
         }
 
@@ -103,6 +110,9 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member deleteById(long id) {
+        if(members==null)
+            return null;
+
         Member member=getById(id);
         if(member!=null && member.getStatus()!=MemberStatus.REMOVED)
         {
