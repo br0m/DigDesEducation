@@ -11,5 +11,11 @@
 
     <artifactId>app</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>repositories</artifactId>
+            <version>${revision}${changelist}</version>
+        </dependency>
+    </dependencies>
 </project>

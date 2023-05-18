@@ -1,4 +1,4 @@
-package com.digdes.java2023.dto.project;
+package com.digdes.java2023.model;
 
 import com.digdes.java2023.dto.enums.ProjectStatus;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProjectDto {
+public class Project {
     private long id;
     private String codename;
     private String title;
