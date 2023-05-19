@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MemberRepositoryImpl implements MemberRepository {
+public class MemberRepositoryFileImpl implements MemberRepository {
 
     private static List<Member> members;
     private static long id;
     private static final String fileName = "memberStorage.json";
 
-    public MemberRepositoryImpl() {
+    public MemberRepositoryFileImpl() {
         members = getAll();
         if(members!=null)
             id = members.size();
