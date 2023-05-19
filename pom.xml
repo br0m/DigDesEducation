@@ -46,7 +46,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <finalName>project</finalName>
         <plugins>
@@ -64,6 +63,25 @@
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
+            </plugin>
+            <plugin>
+                <!--start with basic information to get Liquibase plugin:
+                include <groupId>, <artifactID>, and <version> elements-->
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.22.0</version>
+                <configuration>
+                    <!--set values for Liquibase properties and settings
+                    for example, the location of a properties file to use-->
+                    <propertyFile>liquibase.properties</propertyFile>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>42.6.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

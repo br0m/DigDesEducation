@@ -1,0 +1,93 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Sergey (generated)" id="1684503390802-1">
+        <createTable remarks="Таблица описывает сущность сотрудник" tableName="member">
+            <column autoIncrement="true" name="id" remarks="Уникальный идентификатор сотрудника" startWith="6" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="members_pk"/>
+            </column>
+            <column name="lastname" remarks="Фамилия (обязательное поле)" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" remarks="Имя (обязательное поле)" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patronymic" remarks="Отчество (не обязательное)" type="VARCHAR(50)"/>
+            <column name="job_title" remarks="Должность (не обязательное)" type="VARCHAR(100)"/>
+            <column name="account" remarks="Учетная запись (не обязательное), но  уникальное значение среди активных сотрудников" type="VARCHAR(50)"/>
+            <column name="email" remarks="Адрес электронной почты (не обязательное)" type="VARCHAR(50)"/>
+            <column name="status" remarks="Статус сотрудника - (обязательное поле) фиксированный набор значений (ACTIVE, REMOVE)" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Sergey (generated)" id="1684503390802-2">
+        <createTable remarks="Таблица описывает сущность проект" tableName="project">
+            <column autoIncrement="true" name="id" remarks="Уникальный идентификатор проекта" startWith="3" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="project_pk"/>
+            </column>
+            <column name="codename" remarks="Код проекта - некоторое уникальное имя проекта. Является обязательным и уникальным среди всех проектов." type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" remarks="Наименование - текстовое значение содержащее короткое наименование проекта.. Обязательное поле." type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" remarks="Описание - текстовое значение содержащее более детальную информацию о проекте. Не обязательное поле." type="TEXT"/>
+            <column name="status" remarks="Статус проекта - текстовое значение, обозначающее состояние проекта. Список статусов фиксированный (DRAFT, DEVELOPING, TESTING, FINISHED). Обязательное поле." type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Sergey (generated)" id="1684503390802-3">
+        <createTable remarks="Таблица описывает сущность задача" tableName="task">
+            <column autoIncrement="true" name="id" remarks="Уникальный идентификатор задачи" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="task_pk"/>
+            </column>
+            <column name="title" remarks="Наименование задачи - текстовое значение, отражающее краткую информацию о задачи (обязательное поле)." type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" remarks="Описание задачи - текстовое значение, содержащее детальное описание задачи. (не обязательное поле)" type="TEXT"/>
+            <column name="responsible_member" remarks="Исполнитель задачи - сотрудник, которому необходимо исполнить задачу. (не обязательное поле). Можно выбрать исполнителя только участника проекта ( сотрудник добавленный в команду проекта). Назначить исполнителя можно только сотрудника в статусе Активный." type="INTEGER"/>
+            <column name="hours_cost" remarks="Трудозатраты - оценка, сколько в часах необходимо на ее исполнение. (обязательное поле)" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deadline" remarks="Крайний срок - дата, когда задача должна быть исполнена. Нельзя выбрать дату если дата меньше, чем  дата создания + трудозатраты. Обязательное поле." type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" remarks="Статус задачи - фиксированный список состояний задачи (NEW, WORKING, FINISHED, CLOSED)." type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author" remarks="Автор задачи - заполняется автоматически, тем кто создавал задачу. Автором задачи может являться только участник проекта." type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" remarks="Дата создания - дата когда задача была создана." type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastchange_date" remarks="Дата последнего изменения задачи - дата последнего редактирования задачи (но не изменение статуса задачи)." type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Sergey (generated)" id="1684503390802-4">
+        <createTable remarks="Группа сотрудников, объединенных общим проектом" tableName="team">
+            <column name="project_id" remarks="Сущность - проект" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" remarks="Сущность - сотрудник" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" remarks="Роль сотрудника. В разных командах один сотрудник может принимать различные роли, но только одну роль внутри проекта. Список ролей фиксированный: TEAMLEAD, ANALYST, DEVELOPER, QA." type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Sergey (generated)" id="1684503390802-5">
+        <addPrimaryKey columnNames="member_id, project_id" constraintName="team_pk" tableName="team"/>
+    </changeSet>
+    <changeSet author="Sergey (generated)" id="1684503390802-6">
+        <addForeignKeyConstraint baseColumnNames="responsible_member,author" baseTableName="task" constraintName="task_team_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="member_id,project_id" referencedTableName="team" validate="true"/>
+    </changeSet>
+    <changeSet author="Sergey (generated)" id="1684503390802-7">
+        <addForeignKeyConstraint baseColumnNames="member_id" baseTableName="team" constraintName="team_member_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="member" validate="true"/>
+    </changeSet>
+    <changeSet author="Sergey (generated)" id="1684503390802-8">
+        <addForeignKeyConstraint baseColumnNames="project_id" baseTableName="team" constraintName="team_project_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="project" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
