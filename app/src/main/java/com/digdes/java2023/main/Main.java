@@ -9,28 +9,36 @@ import com.digdes.java2023.repositories.TeamRepository;
 import com.digdes.java2023.repositories.impl.MemberRepositoryJdbcImpl;
 import com.digdes.java2023.repositories.impl.TeamRepositoryJdbcImpl;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
 
-        MemberRepository memberRepository = new MemberRepositoryJdbcImpl("jdbc:postgresql://localhost:5432/digdes_project", "postgres", "admin");
-        Member member = Member.builder().firstName("Иван").lastName("Иванов").patronymic("Иванович").account("ivanov").jobTitle("Developer").email("ivanov@mail.ru").status(MemberStatus.ACTIVE).build();
-        member=memberRepository.createMember(member);
+        try(Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/digdes_project", "postgres", "admin")){
 
-        Member member2 = Member.builder().id(member.getId()).firstName(member.getFirstName()).lastName(member.getLastName()).patronymic(member.getPatronymic()).jobTitle("Tester").status(member.getStatus()).build();
-        member2=memberRepository.updateMember(member2);
+            MemberRepository memberRepository = new MemberRepositoryJdbcImpl(connection);
+            Member member = Member.builder().firstName("Иван").lastName("Иванов").patronymic("Иванович").account("ivanov").jobTitle("Developer").email("ivanov@mail.ru").status(MemberStatus.ACTIVE).build();
+            member=memberRepository.createMember(member);
 
-        List<Member> list = memberRepository.findMember(member.getFirstName());
+            Member member2 = Member.builder().id(member.getId()).firstName(member.getFirstName()).lastName(member.getLastName()).patronymic(member.getPatronymic()).jobTitle("Tester").status(member.getStatus()).build();
+            member2=memberRepository.updateMember(member2);
 
-        Member member3 = memberRepository.getById(member2.getId());
-        Member member4 = memberRepository.deleteById(member2.getId());
-        list = memberRepository.getAll();
+            List<Member> list = memberRepository.findMember(member.getFirstName());
 
-        TeamRepository teamRepository = new TeamRepositoryJdbcImpl("jdbc:postgresql://localhost:5432/digdes_project", "postgres", "admin");
-        Project project = new Project();
-        project.setId(2);
-        Map<Member, MemberRole> map = teamRepository.getProjectMembers(project);
+            Member member3 = memberRepository.getById(member2.getId());
+            Member member4 = memberRepository.deleteById(member2.getId());
+            list = memberRepository.getAll();
+
+            TeamRepository teamRepository = new TeamRepositoryJdbcImpl(connection);
+            Project project = new Project();
+            project.setId(2);
+            Map<Member, MemberRole> map = teamRepository.getProjectMembers(project);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
