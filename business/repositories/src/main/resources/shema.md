@@ -1,6 +1,6 @@
 ## 1. ER-модель
 
-<img height="981" src="ER_model.png" width="813"/>
+<img height="1012" src="ER_model.png" width="694"/>
 
 ## 2. Описание БД
 ### Table: member
@@ -85,7 +85,10 @@ check (lastchange_date >= creation_date),`
 
 ### Table: team
 **Группа сотрудников, объединенных общим проектом**
-
+* `id         serial
+        constraint team_pk
+            primary key`
+  * Уникальный идентификатор участника команды
 * `project_id integer     not null
     constraint team_project_id_fk
         references project,`
@@ -100,5 +103,3 @@ check (lastchange_date >= creation_date),`
                ((ARRAY ['TEAMLEAD'::character varying, 'ANALYST'::character varying, 'DEVELOPER'::character varying, 'QA'::character varying])::text[])),
 `
   * Роль сотрудника. В разных командах один сотрудник может принимать различные роли, но только одну роль внутри проекта. Список ролей фиксированный: TEAMLEAD, ANALYST, DEVELOPER, QA.
-* `constraint team_pk
-    primary key (member_id, project_id)`
