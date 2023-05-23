@@ -12,21 +12,17 @@ import java.util.Map;
 
 public class TeamRepositoryJdbcImpl implements TeamRepository {
 
-    private final String url;
-    private final String username;
-    private final String password;
+    Connection connection;
 
-    public TeamRepositoryJdbcImpl(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
+    public TeamRepositoryJdbcImpl(Connection connection) {
+    this.connection=connection;
     }
 
     @Override
     public Map<Member, MemberRole> getProjectMembers(Project project) {
         Map<Member, MemberRole> projectMembers = new HashMap<>();
 
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT member.*, team.role FROM team LEFT JOIN member ON team.member_id=member.id WHERE team.project_id=?")) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT member.*, team.role FROM team LEFT JOIN member ON team.member_id=member.id WHERE team.project_id=?")) {
             statement.setLong(1, project.getId());
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()){
@@ -48,9 +44,5 @@ public class TeamRepositoryJdbcImpl implements TeamRepository {
         }
 
         return projectMembers;
-    }
-    private Connection getConnection() throws SQLException {
-
-        return DriverManager.getConnection(url, username, password);
     }
 }

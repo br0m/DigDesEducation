@@ -9,20 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberRepositoryJdbcImpl implements MemberRepository {
-    private final String url;
-    private final String username;
-    private final String password;
 
-    public MemberRepositoryJdbcImpl(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
+    Connection connection;
+
+    public MemberRepositoryJdbcImpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
     public Member createMember(Member member) {
         int rowCount = 0;
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(" INSERT INTO member (lastname, firstname, patronymic, job_title, account, email, status) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement statement = connection.prepareStatement(" INSERT INTO member (lastname, firstname, patronymic, job_title, account, email, status) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             prepareStatement(statement, member);
             rowCount = statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
@@ -32,13 +29,13 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
             e.printStackTrace();
         }
 
-        return rowCount == 1 ? member : null;
+        return memberOrNull(member, rowCount);
     }
 
     @Override
     public Member updateMember(Member member) {
         int rowCount = 0;
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("UPDATE member SET lastname=?, firstname=?, patronymic=?, job_title=?, account=?, email=?, status=? WHERE id=?")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE member SET lastname=?, firstname=?, patronymic=?, job_title=?, account=?, email=?, status=? WHERE id=?")) {
             prepareStatement(statement, member);
             statement.setLong(8, member.getId());
             rowCount = statement.executeUpdate();
@@ -46,25 +43,27 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
             e.printStackTrace();
         }
 
-        return rowCount == 1 ? member : null;
+        return memberOrNull(member, rowCount);
     }
 
     @Override
     public List<Member> findMember(String findText) {
         List<Member> members = new ArrayList<>();
-        findText = "%" + findText + "%";
 
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT * FROM member WHERE (lastname LIKE ? OR firstname LIKE ? OR patronymic LIKE ? OR account LIKE ? OR email LIKE ?) AND status=?")) {
-            for (int i = 1; i < 6; i++) {
-                statement.setString(i, findText);
+        if(findText.length()>=3) {
+            findText = "%" + findText + "%";
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM member WHERE (lastname LIKE ? OR firstname LIKE ? OR patronymic LIKE ? OR account LIKE ? OR email LIKE ?) AND status=?")) {
+                for (int i = 1; i < 6; i++) {
+                    statement.setString(i, findText);
+                }
+                statement.setString(6, MemberStatus.ACTIVE.toString());
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    members.add(mapping(resultSet));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            statement.setString(6, MemberStatus.ACTIVE.toString());
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                members.add(mapping(resultSet));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return members;
@@ -73,7 +72,7 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
     @Override
     public Member getById(long id) {
         Member member = null;
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT * FROM member WHERE id=?")) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM member WHERE id=?")) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next())
@@ -88,7 +87,7 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
     @Override
     public List<Member> getAll() {
         List<Member> members = new ArrayList<>();
-        try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM member");
             while (resultSet.next()) {
                 members.add(mapping(resultSet));
@@ -106,7 +105,7 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
         Member member = getById(id);
 
         if (member != null && member.getStatus() == MemberStatus.ACTIVE) {
-            try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("UPDATE member SET status=? WHERE id=?")) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE member SET status=? WHERE id=?")) {
                 statement.setString(1, MemberStatus.REMOVED.toString());
                 statement.setLong(2, member.getId());
                 rowCount = statement.executeUpdate();
@@ -116,12 +115,7 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
             }
         }
 
-        return rowCount == 1 ? member : null;
-    }
-
-    private Connection getConnection() throws SQLException {
-
-        return DriverManager.getConnection(url, username, password);
+        return memberOrNull(member, rowCount);
     }
 
     private Member mapping(ResultSet resultSet) throws SQLException {
@@ -147,5 +141,9 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
         statement.setString(5, member.getAccount());
         statement.setString(6, member.getEmail());
         statement.setString(7, member.getStatus().toString());
+    }
+
+    Member memberOrNull(Member member, int rowCount) {
+        return rowCount == 1 ? member : null;
     }
 }
