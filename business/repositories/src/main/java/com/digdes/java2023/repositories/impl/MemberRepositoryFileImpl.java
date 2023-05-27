@@ -16,7 +16,7 @@ import java.util.Optional;
 public class MemberRepositoryFileImpl implements MemberRepository {
 
     private static List<Member> members;
-    private static long id;
+    private static int id;
     private static final String fileName = "memberStorage.json";
 
     public MemberRepositoryFileImpl() {

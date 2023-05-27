@@ -24,7 +24,7 @@ public class MemberRepositoryJdbcImpl implements MemberRepository {
             rowCount = statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next())
-                member.setId(resultSet.getLong("id"));
+                member.setId(resultSet.getInt("id"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
