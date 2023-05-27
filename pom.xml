@@ -25,6 +25,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>3.1.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -43,6 +51,18 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>42.6.0</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>4.22.0</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
+            <dependency>
+                <groupId>org.modelmapper</groupId>
+                <artifactId>modelmapper</artifactId>
+                <version>3.1.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -71,8 +91,6 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.22.0</version>
                 <configuration>
-                    <!--set values for Liquibase properties and settings
-                    for example, the location of a properties file to use-->
                     <propertyFile>liquibase.properties</propertyFile>
                 </configuration>
                 <dependencies>

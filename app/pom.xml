@@ -14,8 +14,24 @@
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
-            <artifactId>repositories</artifactId>
+            <artifactId>controllers</artifactId>
             <version>${revision}${changelist}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!--start with basic information to get Liquibase plugin:
+                include <groupId>, <artifactID>, and <version> elements-->
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.22.0</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
