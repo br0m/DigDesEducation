@@ -1,7 +1,11 @@
 package com.digdes.java2023.dto.task;
 
 import com.digdes.java2023.dto.enums.TaskStatus;
-import com.digdes.java2023.dto.member.MemberDto;
+import com.digdes.java2023.dto.project.ProjectDto;
+import com.digdes.java2023.dto.team.TeamMemberDto;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,11 +13,16 @@ import lombok.Setter;
 @Setter
 public class TaskDto {
 
-    private long id;
+    private Integer id;
+    @NotBlank
     private String title;
     private String description;
-    private MemberDto responsibleMember;
-    private long hoursCost;     //Трудозатраты - оценка, сколько в часах необходимо на ее исполнение. (обязательное поле)
+    private TeamMemberDto responsibleMember;
+    @Min(value=1)
+    @NotNull
+    private Integer hoursCost;     //Трудозатраты - оценка, сколько в часах необходимо на ее исполнение. (обязательное поле)
     private TaskStatus status;
-    private MemberDto author;
+    private TeamMemberDto author;
+    @NotNull
+    private ProjectDto project;
 }
