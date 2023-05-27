@@ -1,8 +1,8 @@
 package com.digdes.java2023.controllers;
 
-import com.digdes.java2023.dto.member.CreateMemberDto;
-import com.digdes.java2023.dto.member.MemberDto;
-import com.digdes.java2023.services.MemberService;
+import com.digdes.java2023.dto.enums.ProjectStatus;
+import com.digdes.java2023.dto.project.ProjectDto;
+import com.digdes.java2023.services.ProjectService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
@@ -16,34 +16,29 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
-public class MemberController {
+@RequestMapping("/project")
+public class ProjectController {
 
-    private final MemberService memberService;
+    private final ProjectService projectService;
 
     @PostMapping("/save")
-    public MemberDto create(@RequestBody CreateMemberDto memberDto) {
-        return memberService.create(memberDto);
+    public ProjectDto create(@RequestBody ProjectDto projectDto) {
+        return projectService.create(projectDto);
     }
 
     @PutMapping("/{id}")
-    public MemberDto update(@PathVariable Integer id, @RequestBody CreateMemberDto memberDto) {
-        return memberService.update(id, memberDto);
-    }
-
-    @GetMapping("/{id}")
-    public MemberDto getById(@PathVariable Integer id) {
-        return memberService.getById(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public MemberDto remove(@PathVariable Integer id) {
-        return memberService.remove(id);
+    public ProjectDto update(@PathVariable Integer id, @RequestBody ProjectDto projectDto) {
+        return projectService.update(id, projectDto);
     }
 
     @GetMapping("/find")
-    public List<MemberDto> find(@RequestParam String text) {
-        return memberService.find(text);
+    public List<ProjectDto> find(@RequestParam String text, @RequestParam List<ProjectStatus> statuses) {
+        return projectService.find(text, statuses);
+    }
+
+    @PatchMapping("/{id}/{status}")
+    public ProjectDto setStatus(@PathVariable Integer id, @PathVariable ProjectStatus status) {
+        return projectService.setStatus(id, status);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -69,4 +64,5 @@ public class MemberController {
     public ErrorMessage handleException(ConstraintViolationException exception) {
         return new ErrorMessage(exception.getMessage());
     }
+
 }

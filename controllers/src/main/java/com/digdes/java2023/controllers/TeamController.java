@@ -1,8 +1,8 @@
 package com.digdes.java2023.controllers;
 
-import com.digdes.java2023.dto.member.CreateMemberDto;
-import com.digdes.java2023.dto.member.MemberDto;
-import com.digdes.java2023.services.MemberService;
+import com.digdes.java2023.dto.team.TeamDto;
+import com.digdes.java2023.dto.team.TeamMemberDto;
+import com.digdes.java2023.services.TeamService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
@@ -12,39 +12,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
-public class MemberController {
+@RequestMapping("/team")
+public class TeamController {
 
-    private final MemberService memberService;
+    private final TeamService teamService;
 
-    @PostMapping("/save")
-    public MemberDto create(@RequestBody CreateMemberDto memberDto) {
-        return memberService.create(memberDto);
+    @PostMapping("/add")
+    public TeamMemberDto create(@RequestBody TeamMemberDto teamMemberDto) {
+        return teamService.add(teamMemberDto);
     }
 
-    @PutMapping("/{id}")
-    public MemberDto update(@PathVariable Integer id, @RequestBody CreateMemberDto memberDto) {
-        return memberService.update(id, memberDto);
-    }
-
-    @GetMapping("/{id}")
-    public MemberDto getById(@PathVariable Integer id) {
-        return memberService.getById(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public MemberDto remove(@PathVariable Integer id) {
-        return memberService.remove(id);
+    @DeleteMapping("/{codename}/{id}")
+    public TeamMemberDto remove(@PathVariable String codename, @PathVariable Integer id) {
+        return teamService.remove(codename, id);
     }
 
     @GetMapping("/find")
-    public List<MemberDto> find(@RequestParam String text) {
-        return memberService.find(text);
+    public TeamDto find(@RequestParam String codename) {
+        return teamService.getProjectMembers(codename);
     }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PropertyValueException.class)

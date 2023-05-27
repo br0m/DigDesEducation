@@ -1,8 +1,10 @@
 package com.digdes.java2023.controllers;
 
-import com.digdes.java2023.dto.member.CreateMemberDto;
-import com.digdes.java2023.dto.member.MemberDto;
-import com.digdes.java2023.services.MemberService;
+import com.digdes.java2023.dto.enums.TaskStatus;
+import com.digdes.java2023.dto.task.FindTaskDto;
+import com.digdes.java2023.dto.task.TaskDto;
+import com.digdes.java2023.dto.task.TaskViewDto;
+import com.digdes.java2023.services.TaskService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
@@ -16,34 +18,29 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
-public class MemberController {
+@RequestMapping("/task")
+public class TaskController {
 
-    private final MemberService memberService;
+    private final TaskService taskService;
 
     @PostMapping("/save")
-    public MemberDto create(@RequestBody CreateMemberDto memberDto) {
-        return memberService.create(memberDto);
+    public TaskViewDto create(@RequestBody TaskDto taskDto) {
+        return taskService.create(taskDto);
     }
 
     @PutMapping("/{id}")
-    public MemberDto update(@PathVariable Integer id, @RequestBody CreateMemberDto memberDto) {
-        return memberService.update(id, memberDto);
+    public TaskViewDto update(@PathVariable Integer id, @RequestBody TaskDto taskDto) {
+        return taskService.update(taskDto, id);
     }
 
-    @GetMapping("/{id}")
-    public MemberDto getById(@PathVariable Integer id) {
-        return memberService.getById(id);
+    @PatchMapping("/{id}/{status}")
+    public TaskViewDto setStatus(@PathVariable Integer id, @PathVariable TaskStatus status) {
+        return taskService.setStatus(id, status);
     }
 
-    @DeleteMapping("/{id}")
-    public MemberDto remove(@PathVariable Integer id) {
-        return memberService.remove(id);
-    }
-
-    @GetMapping("/find")
-    public List<MemberDto> find(@RequestParam String text) {
-        return memberService.find(text);
+    @PostMapping("/find")
+    public List<TaskViewDto> find(@RequestBody FindTaskDto findTaskDto) {
+        return taskService.find(findTaskDto);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -70,3 +67,4 @@ public class MemberController {
         return new ErrorMessage(exception.getMessage());
     }
 }
+
