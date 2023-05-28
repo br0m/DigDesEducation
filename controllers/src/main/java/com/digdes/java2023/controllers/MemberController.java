@@ -5,13 +5,7 @@ import com.digdes.java2023.dto.member.MemberDto;
 import com.digdes.java2023.services.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.ObjectNotFoundException;
-import org.hibernate.PropertyValueException;
-import org.modelmapper.spi.ErrorMessage;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,27 +48,4 @@ public class MemberController {
         return memberService.find(text);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(PropertyValueException.class)
-    public ErrorMessage handleException(PropertyValueException exception) {
-        return new ErrorMessage(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ObjectNotFoundException.class)
-    public ErrorMessage handleException(ObjectNotFoundException exception) {
-        return new ErrorMessage(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ErrorMessage handleException(HttpMessageNotReadableException exception) {
-        return new ErrorMessage(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ErrorMessage handleException(ConstraintViolationException exception) {
-        return new ErrorMessage(exception.getMessage());
-    }
 }
