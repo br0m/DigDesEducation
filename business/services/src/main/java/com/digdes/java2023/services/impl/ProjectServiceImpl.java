@@ -25,8 +25,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepositoryJpa projectRepositoryJpa;
     private final ProjectMapper mapper;
-    private Project project;
-
 
     @Override
     public ProjectDto getById(@NotNull Integer id) {
@@ -35,7 +33,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDto create(@Valid ProjectDto projectDto) {
-        project = mapper.toEntity(projectDto);
+        Project project = mapper.toEntity(projectDto);
         checkCodename(project.getCodename());
         project.setStatus(ProjectStatus.DRAFT);
         projectRepositoryJpa.save(project);
@@ -44,21 +42,21 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDto update(@NotNull Integer id, @Valid ProjectDto projectDto) {
-        project = mapper.toEntity(projectDto);
+        Project project = mapper.toEntity(projectDto);
         checkCodename(project.getCodename());
         project.setId(id);
         int count = projectRepositoryJpa.update(project.getCodename(), project.getTitle(), project.getDescription(), id);
-        return dtoOrNull(count);
+        return dtoOrNull(count, project);
     }
 
     @Override
     public ProjectDto setStatus(@NotNull Integer id, @NotNull ProjectStatus status) {
-        project = getEntityById(id);
+        Project project = getEntityById(id);
         if (status.ordinal() - project.getStatus().ordinal() != 1)
             throw new PropertyValueException("Not according workflow", "project", "status");
         int count = projectRepositoryJpa.setStatus(id, status);
         project.setStatus(status);
-        return dtoOrNull(count);
+        return dtoOrNull(count, project);
     }
 
     @Override
@@ -71,7 +69,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepositoryJpa.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "project"));
     }
 
-    private ProjectDto dtoOrNull(int count) {
+    private ProjectDto dtoOrNull(int count, Project project) {
         return count == 1 ? mapper.toDto(project) : null;
     }
 

@@ -29,11 +29,10 @@ public class TeamServiceImpl implements TeamService {
     private final MemberRepositoryJpa memberRepositoryJpa;
     private final ProjectRepositoryJpa projectRepositoryJpa;
     private final TeamMapper mapper;
-    private TeamMember teamMember;
 
     @Override
     public TeamMemberDto add(@Valid TeamMemberDto teamMemberDto) {
-        teamMember = mapper.toEntity(teamMemberDto);
+        TeamMember teamMember = mapper.toEntity(teamMemberDto);
         checkMemberAndProjectExist(teamMember);
         if (getTeamMember(teamMember.getMember(), teamMember.getProject()) != null)
             throw new PropertyValueException("Already a member of the project team", "team", "member");
@@ -43,7 +42,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public TeamMemberDto remove(@NotEmpty String codename, @NotNull Integer id) {
-        teamMember = teamRepositoryJpa.findByMemberIdAndProjectCodename(id, codename).orElseThrow(() -> new PropertyValueException("Not a member of the project team", "team", "member"));
+        TeamMember teamMember = teamRepositoryJpa.findByMemberIdAndProjectCodename(id, codename).orElseThrow(() -> new PropertyValueException("Not a member of the project team", "team", "member"));
         int count = teamRepositoryJpa.removeById(teamMember.getId());
         return count == 1 ? mapper.toDto(teamMember) : null;
     }

@@ -33,7 +33,6 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     private final MemberRepositoryJpa memberRepositoryJpa;
     private final PasswordEncoder passwordEncoder;
     private final MemberMapper mapper;
-    private Member member;
 
     @Override
     public MemberDto getById(@NotNull Integer id) {
@@ -42,7 +41,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 
     @Override
     public MemberDto create(@Valid CreateMemberDto memberDto) {
-        member = mapper.toEntity(memberDto);
+        Member member = mapper.toEntity(memberDto);
         if (memberRepositoryJpa.findByAccountAndStatus(member.getAccount(), MemberStatus.ACTIVE).isPresent())
             throw new PropertyValueException("Not unique value", "member", "account");
         member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -56,7 +55,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         Member oldMember = getEntityById(id);
         if (oldMember.getStatus() == MemberStatus.REMOVED)
             throw new PropertyValueException("Member already removed", "member", "id");
-        member = mapper.toEntity(memberDto);
+        Member member = mapper.toEntity(memberDto);
         member.setId(id);
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         if (member.getStatus() == null)
@@ -67,12 +66,12 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 
     @Override
     public MemberDto remove(@NotNull Integer id) {
-        member = getEntityById(id);
+        Member member = getEntityById(id);
         if (member.getStatus() == MemberStatus.REMOVED)
             throw new PropertyValueException("Member already removed", "member", "id");
         int count = memberRepositoryJpa.removeById(id);
         member.setStatus(MemberStatus.REMOVED);
-        return dtoOrNull(count);
+        return count == 1 ? mapper.toDto(member) : null;
 
     }
 
@@ -86,20 +85,16 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         return memberRepositoryJpa.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "member"));
     }
 
-    private MemberDto dtoOrNull(int count) {
-        return count == 1 ? mapper.toDto(member) : null;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepositoryJpa.findByAccount(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
+        Member member = memberRepositoryJpa.findByAccount(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new MemberDetails(member);
     }
 
     @PostConstruct
     public void initAdmin() {
         Optional<Member> member = memberRepositoryJpa.findByAccount("admin");
-        if(member.isEmpty())
+        if (member.isEmpty())
             memberRepositoryJpa.save(Member.builder().lastName("admin").firstName("admin").status(MemberStatus.ACTIVE).account("admin").password(passwordEncoder.encode("admin")).build());
     }
 }
