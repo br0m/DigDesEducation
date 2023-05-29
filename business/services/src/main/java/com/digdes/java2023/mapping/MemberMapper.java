@@ -2,6 +2,7 @@ package com.digdes.java2023.mapping;
 
 import com.digdes.java2023.dto.member.MemberDto;
 import com.digdes.java2023.model.Member;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -9,8 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MemberMapper {
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
     public Member toEntity(MemberDto memberDto) {
         return modelMapper.map(memberDto, Member.class);

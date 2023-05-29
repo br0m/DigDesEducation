@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskMapper {
 
-    ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
     public Task toEntity(Object taskDto) {
         assert (taskDto instanceof TaskDto || taskDto instanceof FindTaskDto);

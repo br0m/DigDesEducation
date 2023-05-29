@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TeamMapper {
 
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
     private final ProjectMapper projectMapper;
     private final MemberMapper memberMapper;
 
