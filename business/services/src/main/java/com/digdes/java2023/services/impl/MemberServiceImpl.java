@@ -43,7 +43,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     @Override
     public MemberDto create(@Valid CreateMemberDto memberDto) {
         member = mapper.toEntity(memberDto);
-        if (memberRepositoryJpa.findByAccount(member.getAccount()).isPresent())
+        if (memberRepositoryJpa.findByAccountAndStatus(member.getAccount(), MemberStatus.ACTIVE).isPresent())
             throw new PropertyValueException("Not unique value", "member", "account");
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         member.setStatus(MemberStatus.ACTIVE);
