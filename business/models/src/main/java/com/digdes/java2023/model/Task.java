@@ -23,7 +23,7 @@ public class Task {
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "responsible_member")
     private TeamMember responsibleMember;
 
@@ -37,7 +37,7 @@ public class Task {
     @Column(name = "status", nullable = false, length = 20)
     private TaskStatus status;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "author", nullable = false)
     private TeamMember author;
 
@@ -47,7 +47,7 @@ public class Task {
     @Column(name = "lastchange_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime lastchangeDate;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
