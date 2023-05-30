@@ -17,6 +17,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.PropertyValueException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -33,14 +35,12 @@ public class TaskServiceImpl implements TaskService {
     private final TeamRepositoryJpa teamRepositoryJpa;
     private final ProjectRepositoryJpa projectRepositoryJpa;
     private final TaskMapper mapper;
-    private Task task;
-    private Member member;
 
     @Override
     public TaskViewDto create(@Valid TaskDto taskDto) {
-        task = mapper.toEntity(taskDto);
-        member = getAuthorMember();
-        checkTeamMembers(member.getId(), (task.getResponsibleMember() != null ? task.getResponsibleMember().getId() : null), task.getProject().getCodename());
+        Task task = mapper.toEntity(taskDto);
+        Member member = getAuthorMember();
+        checkTeamMembers(member, task);
         task.setStatus(TaskStatus.NEW);
         task.setCreationDate(LocalDateTime.now());
         task.setDeadline(task.getCreationDate().plusHours(task.getHoursCost()));
@@ -50,41 +50,32 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskViewDto update(@Valid TaskDto taskDto, @NotNull Integer id) {
-        task = mapper.toEntity(taskDto);
+        Task task = mapper.toEntity(taskDto);
         Task oldTask = getTaskById(id);
-        member = getAuthorMember();
-        checkTeamMembers(member.getId(), (task.getResponsibleMember() != null ? task.getResponsibleMember().getId() : null), task.getProject().getCodename());
+        Member member = getAuthorMember();
+        checkTeamMembers(member, task);
         task.setId(id);
         task.setDeadline(oldTask.getCreationDate().plusHours(task.getHoursCost()));
         task.setLastchangeDate(LocalDateTime.now());
         int count = taskRepositoryJpa.update(task.getTitle(), task.getDescription(), task.getResponsibleMember(), task.getHoursCost(), task.getDeadline(), task.getAuthor(), task.getLastchangeDate(), id);
-        return dtoOrNull(count);
+        return dtoOrNull(count, task);
     }
 
     @Override
     public TaskViewDto setStatus(@NotNull Integer id, @NotNull TaskStatus status) {
-        task = getTaskById(id);
+        Task task = getTaskById(id);
         if (status.ordinal() - task.getStatus().ordinal() != 1)
             throw new PropertyValueException("Not according workflow", "task", "status");
         task.setStatus(status);
         int count = taskRepositoryJpa.setStatus(status, id);
-        return dtoOrNull(count);
+        return dtoOrNull(count, task);
     }
 
     @Override
     public List<TaskViewDto> find(FindTaskDto findTaskDto) {
-        task = mapper.toEntity(findTaskDto);
-        List<Task> tasks;
-
-        if (findTaskDto.getDeadlinePeriod() == TaskTimeFindParam.AFTER && findTaskDto.getCreationPeriod() == TaskTimeFindParam.AFTER)
-            tasks = taskRepositoryJpa.findByDeadlineAfterAndCreationDateAfter(task.getTitle(), task.getStatus(), (task.getAuthor() != null ? task.getAuthor().getId() : null), (task.getResponsibleMember() != null ? task.getResponsibleMember().getId() : null), task.getDeadline(), task.getCreationDate());
-        else if (findTaskDto.getDeadlinePeriod() == TaskTimeFindParam.BEFORE && findTaskDto.getCreationPeriod() == TaskTimeFindParam.BEFORE)
-            tasks = taskRepositoryJpa.findByDeadlineBeforeAndCreationDateBefore(task.getTitle(), task.getStatus(), (task.getAuthor() != null ? task.getAuthor().getId() : null), (task.getResponsibleMember() != null ? task.getResponsibleMember().getId() : null), task.getDeadline(), task.getCreationDate());
-        else if (findTaskDto.getDeadlinePeriod() == TaskTimeFindParam.AFTER && findTaskDto.getCreationPeriod() == TaskTimeFindParam.BEFORE)
-            tasks = taskRepositoryJpa.findByDeadlineAfterAndCreationDateBefore(task.getTitle(), task.getStatus(), (task.getAuthor() != null ? task.getAuthor().getId() : null), (task.getResponsibleMember() != null ? task.getResponsibleMember().getId() : null), task.getDeadline(), task.getCreationDate());
-        else
-            tasks = taskRepositoryJpa.findByDeadlineBeforeAndCreationDateAfter(task.getTitle(), task.getStatus(), (task.getAuthor() != null ? task.getAuthor().getId() : null), (task.getResponsibleMember() != null ? task.getResponsibleMember().getId() : null), task.getDeadline(), task.getCreationDate());
-
+        Task task = mapper.toEntity(findTaskDto);
+        Specification<Task> spec = buildSpecification(task, findTaskDto.getCreationPeriod(), findTaskDto.getDeadlinePeriod());
+        List<Task> tasks = taskRepositoryJpa.findAll(spec, Sort.by(Sort.Direction.DESC, "creationDate"));
         return mapper.toListDto(tasks);
     }
 
@@ -92,11 +83,15 @@ public class TaskServiceImpl implements TaskService {
         return taskRepositoryJpa.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "task"));
     }
 
-    private TaskViewDto dtoOrNull(int count) {
+    private TaskViewDto dtoOrNull(int count, Task task) {
         return count == 1 ? mapper.toDto(task) : null;
     }
 
-    private void checkTeamMembers(Integer memberId, Integer responsibleMemberId, String projectCodename) {
+    private void checkTeamMembers(Member member, Task task) {
+
+        String projectCodename = task.getProject().getCodename();
+        Integer memberId = member.getId();
+        Integer responsibleMemberId = task.getResponsibleMember() != null ? task.getResponsibleMember().getId() : null;
 
         Project project = projectRepositoryJpa.findByCodename(projectCodename).orElseThrow(() -> new PropertyValueException("No such project", "task", "project.codename"));
         task.setProject(project);
@@ -113,5 +108,44 @@ public class TaskServiceImpl implements TaskService {
 
     private Member getAuthorMember() {
         return ((MemberDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getMember();
+    }
+
+    private Specification<Task> titleEquals(String title) {
+        return title != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("title"), title) : Specification.where(null);
+    }
+
+    private Specification<Task> teamMemberEquals(TeamMember teamMember, String paramName) {
+        return teamMember != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(paramName), teamMember.getId()) : Specification.where(null);
+    }
+
+    private Specification<Task> statusEquals(TaskStatus status) {
+        return status != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status) : Specification.where(null);
+    }
+
+    private Specification<Task> dateTimeSpec(LocalDateTime localDateTime, TaskTimeFindParam taskTimeFindParam, String paramName) {
+        switch (taskTimeFindParam) {
+            case AFTER -> {
+                return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(paramName), localDateTime);
+            }
+            case BEFORE -> {
+                return (root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get(paramName), localDateTime);
+            }
+            case EQUAL -> {
+                return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(paramName), localDateTime);
+            }
+            default -> {
+                return Specification.where(null);
+            }
+        }
+    }
+
+    private Specification<Task> buildSpecification(Task task, TaskTimeFindParam creationDateParam, TaskTimeFindParam deadlineParam) {
+        return titleEquals(task.getTitle())
+                .and(teamMemberEquals(task.getResponsibleMember(), "responsibleMember"))
+                .and(statusEquals(task.getStatus()))
+                .and(teamMemberEquals(task.getAuthor(), "author"))
+                .and(dateTimeSpec(task.getDeadline(), deadlineParam, "deadline"))
+                .and(dateTimeSpec(task.getCreationDate(), creationDateParam, "creationDate"));
+
     }
 }
