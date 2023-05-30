@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Repository
-public interface TaskRepositoryJpa extends JpaRepository<Task, Integer>, JpaSpecificationExecutor {
+public interface TaskRepositoryJpa extends JpaRepository<Task, Integer>, JpaSpecificationExecutor<Task> {
 
     @Transactional
     @Modifying
