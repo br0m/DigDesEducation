@@ -4,8 +4,6 @@ package com.digdes.java2023.repositories;
 import com.digdes.java2023.dto.enums.TaskStatus;
 import com.digdes.java2023.model.Task;
 import com.digdes.java2023.model.TeamMember;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface TaskRepositoryJpa extends JpaRepository<Task, Integer>, JpaSpecificationExecutor {
@@ -29,8 +26,4 @@ public interface TaskRepositoryJpa extends JpaRepository<Task, Integer>, JpaSpec
     @Modifying
     @Query("update Task t set t.status = :status where t.id = :id")
     int setStatus(@Param("status") TaskStatus status, @Param("id") Integer id);
-
-    List<Task> findAll(Specification spec, Sort sort);
-
-
 }
