@@ -2,7 +2,6 @@ package com.digdes.java2023.services.impl;
 
 import com.digdes.java2023.dto.enums.MemberStatus;
 import com.digdes.java2023.dto.enums.TaskStatus;
-import com.digdes.java2023.dto.enums.TaskTimeFindParam;
 import com.digdes.java2023.dto.task.FindTaskDto;
 import com.digdes.java2023.dto.task.TaskDto;
 import com.digdes.java2023.dto.task.TaskViewDto;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.PropertyValueException;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -74,8 +72,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskViewDto> find(FindTaskDto findTaskDto) {
         Task task = mapper.toEntity(findTaskDto);
-        Specification<Task> spec = buildSpecification(task, findTaskDto.getCreationPeriod(), findTaskDto.getDeadlinePeriod());
-        List<Task> tasks = taskRepositoryJpa.findAll(spec, Sort.by(Sort.Direction.DESC, "creationDate"));
+        TaskSpecification taskSpecification = new TaskSpecification(task, findTaskDto);
+        List<Task> tasks = taskRepositoryJpa.findAll(taskSpecification.buildSpecification(), Sort.by(Sort.Direction.DESC, "creationDate"));
         return mapper.toListDto(tasks);
     }
 
@@ -108,44 +106,5 @@ public class TaskServiceImpl implements TaskService {
 
     private Member getAuthorMember() {
         return ((MemberDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getMember();
-    }
-
-    private Specification<Task> titleEquals(String title) {
-        return title != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("title"), title) : Specification.where(null);
-    }
-
-    private Specification<Task> teamMemberEquals(TeamMember teamMember, String paramName) {
-        return teamMember != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(paramName), teamMember.getId()) : Specification.where(null);
-    }
-
-    private Specification<Task> statusEquals(TaskStatus status) {
-        return status != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status) : Specification.where(null);
-    }
-
-    private Specification<Task> dateTimeSpec(LocalDateTime localDateTime, TaskTimeFindParam taskTimeFindParam, String paramName) {
-        switch (taskTimeFindParam) {
-            case AFTER -> {
-                return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(paramName), localDateTime);
-            }
-            case BEFORE -> {
-                return (root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get(paramName), localDateTime);
-            }
-            case EQUAL -> {
-                return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(paramName), localDateTime);
-            }
-            default -> {
-                return Specification.where(null);
-            }
-        }
-    }
-
-    private Specification<Task> buildSpecification(Task task, TaskTimeFindParam creationDateParam, TaskTimeFindParam deadlineParam) {
-        return titleEquals(task.getTitle())
-                .and(teamMemberEquals(task.getResponsibleMember(), "responsibleMember"))
-                .and(statusEquals(task.getStatus()))
-                .and(teamMemberEquals(task.getAuthor(), "author"))
-                .and(dateTimeSpec(task.getDeadline(), deadlineParam, "deadline"))
-                .and(dateTimeSpec(task.getCreationDate(), creationDateParam, "creationDate"));
-
     }
 }
