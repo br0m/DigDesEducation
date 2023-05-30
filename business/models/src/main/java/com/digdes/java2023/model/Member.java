@@ -1,7 +1,7 @@
 package com.digdes.java2023.model;
 
 import com.digdes.java2023.dto.enums.MemberStatus;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -9,14 +9,36 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Entity
+@Table(name = "member")
 public class Member {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @Column(name = "firstname", nullable = false, length = 50)
     private String firstName;
+
+    @Column(name = "lastname", nullable = false, length = 50)
     private String lastName;
+
+    @Column(name = "patronymic", length = 50)
     private String patronymic;
+
+    @Column(name = "job_title", length = 100)
     private String jobTitle;
+
+    @Column(name = "account", length = 50)
     private String account;
+
+    @Column(name = "email", length = 50)
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
     private MemberStatus status;
+
+    @Column(name = "password", nullable = false)
+    private String password;
 }

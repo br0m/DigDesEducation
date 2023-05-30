@@ -1,19 +1,45 @@
 package com.digdes.java2023.dto.task;
 
 import com.digdes.java2023.dto.enums.TaskStatus;
-import com.digdes.java2023.dto.member.MemberDto;
+import com.digdes.java2023.dto.project.ProjectDto;
+import com.digdes.java2023.dto.team.TeamMemberDto;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(description = "DTO задачи")
 public class TaskDto {
 
-    private long id;
+    @Schema(description = "Уникальный ID задачи")
+    private Integer id;
+
+    @Schema(description = "Наименование")
+    @NotBlank
     private String title;
+
+    @Schema(description = "Описание")
     private String description;
-    private MemberDto responsibleMember;
-    private long hoursCost;     //Трудозатраты - оценка, сколько в часах необходимо на ее исполнение. (обязательное поле)
+
+    @Schema(description = "Ответственный сотрудник")
+    private TeamMemberDto responsibleMember;
+
+    @Schema(description = "Трудозатраты в часах")
+    @Min(value=1)
+    @NotNull
+    private Integer hoursCost;
+
+    @Schema(description = "Статус: NEW, WORKING, FINISHED, CLOSED")
     private TaskStatus status;
-    private MemberDto author;
+
+    @Schema(description = "Автор задачи")
+    private TeamMemberDto author;
+
+    @Schema(description = "Проект к которому относится задача")
+    @NotNull
+    private ProjectDto project;
 }

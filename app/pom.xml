@@ -14,8 +14,9 @@
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
-            <artifactId>repositories</artifactId>
+            <artifactId>controllers</artifactId>
             <version>${revision}${changelist}</version>
         </dependency>
     </dependencies>
+
 </project>
