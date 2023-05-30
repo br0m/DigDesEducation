@@ -3,7 +3,6 @@ package com.digdes.java2023.controllers;
 import jakarta.validation.ConstraintViolationException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.PropertyValueException;
-import org.jetbrains.annotations.NotNull;
 import org.modelmapper.spi.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,31 +16,31 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PropertyValueException.class)
-    public ErrorMessage handleException(@NotNull PropertyValueException exception) {
+    public ErrorMessage handleException(PropertyValueException exception) {
         return new ErrorMessage(exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ObjectNotFoundException.class)
-    public ErrorMessage handleException(@NotNull ObjectNotFoundException exception) {
+    public ErrorMessage handleException(ObjectNotFoundException exception) {
         return new ErrorMessage(exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ErrorMessage handleException(@NotNull HttpMessageNotReadableException exception) {
+    public ErrorMessage handleException(HttpMessageNotReadableException exception) {
         return new ErrorMessage(exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public ErrorMessage handleException(@NotNull ConstraintViolationException exception) {
+    public ErrorMessage handleException(ConstraintViolationException exception) {
         return new ErrorMessage(exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ErrorMessage handleException(@NotNull HttpRequestMethodNotSupportedException exception) {
+    public ErrorMessage handleException(HttpRequestMethodNotSupportedException exception) {
         return new ErrorMessage(exception.getMessage());
     }
 }
