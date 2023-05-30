@@ -94,7 +94,8 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     @PostConstruct
     public void initAdmin() {
         Optional<Member> member = memberRepositoryJpa.findByAccount("admin");
-        if (member.isEmpty())
+        if (member.isEmpty()) {
             memberRepositoryJpa.save(Member.builder().lastName("admin").firstName("admin").status(MemberStatus.ACTIVE).account("admin").password(passwordEncoder.encode("admin")).build());
+        }
     }
 }
