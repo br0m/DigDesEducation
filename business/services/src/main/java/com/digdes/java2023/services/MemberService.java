@@ -3,8 +3,8 @@ package com.digdes.java2023.services;
 import com.digdes.java2023.dto.member.CreateMemberDto;
 import com.digdes.java2023.dto.member.MemberDto;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -18,6 +18,6 @@ public interface MemberService {
 
     MemberDto remove(@NotNull Integer id);
 
-    List<MemberDto> find(@Min(3) String text);
+    List<MemberDto> find(@Size(min=3) String text);
 
 }
