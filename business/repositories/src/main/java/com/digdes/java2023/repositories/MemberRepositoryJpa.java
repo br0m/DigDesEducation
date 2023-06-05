@@ -14,10 +14,10 @@ import java.util.Optional;
 
 @Repository
 public interface MemberRepositoryJpa extends JpaRepository<Member, Integer> {
-    @Query(value = "SELECT m FROM Member m WHERE (m.lastName LIKE :text OR m.firstName LIKE :text OR m.patronymic LIKE :text OR m.account LIKE :text OR m.email LIKE :text) AND m.status=:status")
+    @Query(value = "SELECT m FROM Member m WHERE (m.lastName=:text OR m.firstName=:text OR m.patronymic=:text OR m.account=:text OR m.email=:text) AND m.status=:status")
     List<Member> findAllByTextAndStatus(@Param("text") String text, @Param("status") MemberStatus status);
 
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Transactional
     @Query(value = "UPDATE Member m SET m.status='REMOVED' WHERE m.id=:id")
     int removeById(@Param("id") Integer id);
