@@ -4,6 +4,8 @@ import com.digdes.java2023.dto.enums.MemberStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @Builder
@@ -41,4 +43,23 @@ public class Member {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, patronymic, jobTitle, account, email, status, password);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", patronymic='" + patronymic + '\'' +
+                ", jobTitle='" + jobTitle + '\'' +
+                ", account='" + account + '\'' +
+                ", email='" + email + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }
