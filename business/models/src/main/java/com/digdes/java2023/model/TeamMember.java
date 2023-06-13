@@ -2,8 +2,9 @@ package com.digdes.java2023.model;
 
 import com.digdes.java2023.dto.enums.MemberRole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -27,4 +28,8 @@ public class TeamMember {
     @Column(name = "role", nullable = false, length = 50)
     private MemberRole role;
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, member, project, role);
+    }
 }
