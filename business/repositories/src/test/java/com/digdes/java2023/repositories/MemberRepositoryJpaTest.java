@@ -29,7 +29,7 @@ public class MemberRepositoryJpaTest extends MemberOperations {
     public void createTest() throws IOException {
         Member member = genMember();
         Member cloneMember = copyMember(member);
-        memberRepository.save(member);
+        member = memberRepository.save(member);
 
         Assertions.assertNotEquals(null, member.getId());
         cloneMember.setId(member.getId());
@@ -39,12 +39,12 @@ public class MemberRepositoryJpaTest extends MemberOperations {
     @Test
     public void updateTest() throws IOException {
         Member member = genMember();
-        memberRepository.save(member);
+        member = memberRepository.save(member);
 
         Member updateMember = genMember();
         updateMember.setId(member.getId());
         Member cloneUpdateMember = copyMember(updateMember);
-        memberRepository.save(updateMember);
+        updateMember = memberRepository.save(updateMember);
 
         Assertions.assertEquals(cloneUpdateMember.hashCode(), updateMember.hashCode());
     }
@@ -52,7 +52,7 @@ public class MemberRepositoryJpaTest extends MemberOperations {
     @Test
     public void findByIdTest() {
         Member member = genMember();
-        memberRepository.save(member);
+        member = memberRepository.save(member);
         Optional<Member> findMember = memberRepository.findById(member.getId());
         assert findMember.isPresent();
         Assertions.assertEquals(member.hashCode(), findMember.get().hashCode());
@@ -61,7 +61,7 @@ public class MemberRepositoryJpaTest extends MemberOperations {
     @Test
     public void removeTest() {
         Member member = genActiveMember();
-        memberRepository.save(member);
+        member = memberRepository.save(member);
         int count = memberRepository.removeById(member.getId());
         Optional<Member> removedMember = memberRepository.findById(member.getId());
 
@@ -76,7 +76,7 @@ public class MemberRepositoryJpaTest extends MemberOperations {
     @Test
     public void findByAccountTest() {
         Member member = genMember();
-        memberRepository.save(member);
+        member = memberRepository.save(member);
         Optional<Member> findMember = memberRepository.findByAccount(member.getAccount());
         assert findMember.isPresent();
         Assertions.assertEquals(member.hashCode(), findMember.get().hashCode());
@@ -85,7 +85,7 @@ public class MemberRepositoryJpaTest extends MemberOperations {
     @Test
     public void findByAccountAndStatusTest() {
         Member member = genMember();
-        memberRepository.save(member);
+        member  = memberRepository.save(member);
         Optional<Member> findMember = memberRepository.findByAccountAndStatus(member.getAccount(), member.getStatus());
         assert findMember.isPresent();
         Assertions.assertEquals(member.hashCode(), findMember.get().hashCode());
@@ -105,7 +105,7 @@ public class MemberRepositoryJpaTest extends MemberOperations {
             removedMembers.add(copyMember(removedMember));
         }
 
-        memberRepository.saveAll(activeMembers);
+        activeMembers = memberRepository.saveAll(activeMembers);
         memberRepository.saveAll(removedMembers);
 
         findMembers(activeMember.getFirstName(), activeMembers);

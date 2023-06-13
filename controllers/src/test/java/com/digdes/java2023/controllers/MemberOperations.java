@@ -21,7 +21,7 @@ public class MemberOperations {
     protected static final CreateMemberDto blankLastNameMember = Instancio.of(CreateMemberDto.class).set(field(CreateMemberDto::getLastName), " ").create();
     protected static final CreateMemberDto blankAccountMember = Instancio.of(CreateMemberDto.class).set(field(CreateMemberDto::getAccount), " ").create();
     protected static final CreateMemberDto blankPasswordMember = Instancio.of(CreateMemberDto.class).set(field(CreateMemberDto::getPassword), " ").create();
-
+    protected Member member;
     protected Member genMember() {
         return Instancio.create(Member.class);
     }

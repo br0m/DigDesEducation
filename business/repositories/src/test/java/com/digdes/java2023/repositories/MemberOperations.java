@@ -14,7 +14,7 @@ public class MemberOperations extends Init{
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     protected Member genMember() {
-        return Instancio.of(Member.class).ignore(field(Member::getId)).create();
+        return Instancio.create(Member.class);
     }
 
     protected Member genActiveMember() {

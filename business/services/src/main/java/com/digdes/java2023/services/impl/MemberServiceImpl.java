@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.PropertyValueException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@CommonsLog
+@Log4j2
 @Validated
 public class MemberServiceImpl implements MemberService, UserDetailsService {
 
@@ -61,7 +61,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     @Override
     public MemberDto update(@NotNull Integer id, @Valid CreateMemberDto memberDto) {
         log.info("Updating member with id = " + id);
-        log.debug(memberDto.toString());
+        log.debug(memberDto!=null ? memberDto.toString() : null);
 
         Member oldMember = getEntityById(id);
         if (oldMember.getStatus() == MemberStatus.REMOVED) {
@@ -143,7 +143,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
             log.warn(message);
             throw new UsernameNotFoundException(message);
         }
-        log.info("Member " + username + " successfully authenticated");
+        log.info("Member " + username + " successfully found");
         return new MemberDetails(member);
     }
 

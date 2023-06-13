@@ -6,7 +6,6 @@ import com.digdes.java2023.dto.member.MemberDto;
 import com.digdes.java2023.mapping.MemberMapper;
 import com.digdes.java2023.model.Member;
 import com.digdes.java2023.repositories.MemberRepositoryJpa;
-import com.digdes.java2023.services.MemberService;
 import com.digdes.java2023.services.impl.MemberServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,8 +38,6 @@ public class MemberControllerTest extends MemberOperations {
 
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private MemberService memberService;
     @MockBean
     private MemberMapper mapper;
     @MockBean
@@ -100,7 +97,7 @@ public class MemberControllerTest extends MemberOperations {
         when(memberRepositoryJpa.findByAccountAndStatus(any(), any())).thenReturn(Optional.empty());
         when(mapper.toDto(any())).thenReturn(outputMember);
 
-        mockMvc.perform(put("/member/" + id)
+        mockMvc.perform(put("/member/{id}", id)
                     .content(toJson(inputMember))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().is2xxSuccessful())
@@ -111,7 +108,7 @@ public class MemberControllerTest extends MemberOperations {
     public void updateNotExistTest() throws Exception {
         when(memberRepositoryJpa.findById(any())).thenReturn(Optional.empty());
 
-        mockMvc.perform(put("/member/" + genRandomId()))
+        mockMvc.perform(put("/member/{id}", genRandomId()))
                 .andExpect(status().isBadRequest());
     }
 
@@ -119,17 +116,25 @@ public class MemberControllerTest extends MemberOperations {
     public void updateAlreadyRemovedTest() throws Exception {
         when(memberRepositoryJpa.findById(any())).thenReturn(Optional.of(genRemovedMember(genRandomId())));
 
-        mockMvc.perform(put("/member/" + genRandomId()))
+        mockMvc.perform(put("/member/{id}", genRandomId()))
                 .andExpect(status().isBadRequest());
     }
 
     @ParameterizedTest
     @MethodSource("invalidDto")
     public void updateInvalidDtoTest(CreateMemberDto createMemberDto) throws Exception {
-        mockMvc.perform(put("/member/" + createMemberDto.getId())
+        mockMvc.perform(put("/member/{id}", createMemberDto.getId())
                         .content(toJson(createMemberDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateNullIdTest() throws Exception {
+        mockMvc.perform(put("/member/")
+                        .content(toJson(genActiveMember(genRandomId())))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -141,7 +146,7 @@ public class MemberControllerTest extends MemberOperations {
         when(memberRepositoryJpa.findById(any())).thenReturn(Optional.of(inputMember));
         when(mapper.toDto(any())).thenReturn(outputMember);
 
-        mockMvc.perform(get("/member/" + inputMember.getId()))
+        mockMvc.perform(get("/member/{id}", inputMember.getId()))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().json(toJson(outputMember)));
     }
@@ -150,8 +155,16 @@ public class MemberControllerTest extends MemberOperations {
     public void getByIdNotExistTest() throws Exception {
         when(memberRepositoryJpa.findById(any())).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/member/" + genRandomId()))
+        mockMvc.perform(get("/member/{id}", genRandomId()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getByIdNullIdTest() throws Exception {
+        when(memberRepositoryJpa.findById(any())).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/member/"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -165,7 +178,7 @@ public class MemberControllerTest extends MemberOperations {
         when(memberRepositoryJpa.removeById(any())).thenReturn(1);
         when(mapper.toDto(any())).thenReturn(outputMember);
 
-        mockMvc.perform(delete("/member/" + inputMember.getId()))
+        mockMvc.perform(delete("/member/{id}", inputMember.getId()))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().json(toJson(outputMember)));
     }
@@ -174,7 +187,7 @@ public class MemberControllerTest extends MemberOperations {
     public void removeNotExistTest() throws Exception {
         when(memberRepositoryJpa.findById(any())).thenReturn(Optional.empty());
 
-        mockMvc.perform(delete("/member/" + genRandomId()))
+        mockMvc.perform(delete("/member/{id}", genRandomId()))
                 .andExpect(status().isBadRequest());
     }
 
@@ -182,8 +195,14 @@ public class MemberControllerTest extends MemberOperations {
     public void removeAlreadyRemovedTest() throws Exception {
         when(memberRepositoryJpa.findById(any())).thenReturn(Optional.of(genRemovedMember(genRandomId())));
 
-        mockMvc.perform(delete("/member/" + genRandomId()))
+        mockMvc.perform(delete("/member/{id}", genRandomId()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void removeNullIdTest() throws Exception {
+        mockMvc.perform(delete("/member/"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
