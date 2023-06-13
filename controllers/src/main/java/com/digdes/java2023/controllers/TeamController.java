@@ -18,7 +18,7 @@ public class TeamController {
 
     @Operation(summary = "Добавление участника проекта")
     @PostMapping("/add")
-    public TeamMemberDto create(@RequestBody TeamMemberDto teamMemberDto) {
+    public TeamMemberDto add(@RequestBody TeamMemberDto teamMemberDto) {
         return teamService.add(teamMemberDto);
     }
 

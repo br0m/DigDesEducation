@@ -5,11 +5,13 @@ import com.digdes.java2023.dto.member.MemberDto;
 import com.digdes.java2023.dto.project.ProjectDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Schema(description = "DTO участника команды проекта")
 public class  TeamMemberDto {
 
