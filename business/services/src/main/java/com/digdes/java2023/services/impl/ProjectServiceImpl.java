@@ -7,9 +7,9 @@ import com.digdes.java2023.model.Project;
 import com.digdes.java2023.repositories.ProjectRepositoryJpa;
 import com.digdes.java2023.services.ProjectService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.PropertyValueException;
@@ -36,14 +36,17 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = mapper.toEntity(projectDto);
         checkCodename(project.getCodename());
         project.setStatus(ProjectStatus.DRAFT);
+        project.setId(null);
         projectRepositoryJpa.save(project);
         return mapper.toDto(project);
     }
 
     @Override
     public ProjectDto update(@NotNull Integer id, @Valid ProjectDto projectDto) {
+        Project oldProject = getEntityById(id);
         Project project = mapper.toEntity(projectDto);
-        checkCodename(project.getCodename());
+        if(!project.getCodename().equals(oldProject.getCodename()))
+            checkCodename(project.getCodename());
         project.setId(id);
         int count = projectRepositoryJpa.update(project.getCodename(), project.getTitle(), project.getDescription(), id);
         return dtoOrNull(count, project);
@@ -60,7 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectDto> find(@Min(3) String text, @NotEmpty List<ProjectStatus> statuses) {
+    public List<ProjectDto> find(@Size(min = 3) String text, @NotEmpty List<ProjectStatus> statuses) {
         List<Project> projects = projectRepositoryJpa.findAllByTextAndStatuses(text, statuses);
         return mapper.toListDto(projects);
     }

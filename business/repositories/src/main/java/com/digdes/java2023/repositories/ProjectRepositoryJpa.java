@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface ProjectRepositoryJpa extends JpaRepository<Project, Integer> {
 
-    @Query(value = "SELECT p FROM Project p WHERE (p.codename LIKE :text OR p.title LIKE :text) AND p.status IN :statuses")
+    @Query(value = "SELECT p FROM Project p WHERE (p.codename=:text OR p.title=:text) AND p.status IN :statuses")
     List<Project> findAllByTextAndStatuses(@Param("text") String text, @Param("statuses") List<ProjectStatus> statuses);
 
     @Modifying
@@ -25,9 +25,10 @@ public interface ProjectRepositoryJpa extends JpaRepository<Project, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Project p SET p.codename =:codename, p.title=:title, p.description=:description WHERE p.id=:id")
+    @Query(value = "UPDATE Project p SET p.codename=:codename, p.title=:title, p.description=:description WHERE p.id=:id")
     int update(@Param("codename") String codename, @Param("title") String title, @Param("description") String description, @Param("id") Integer id);
 
     Optional<Project> findById(Integer id);
+
     Optional<Project> findByCodename(String codename);
 }
