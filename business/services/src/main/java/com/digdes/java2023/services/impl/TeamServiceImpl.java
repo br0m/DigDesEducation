@@ -59,6 +59,6 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private TeamMember getTeamMember(Member member, Project project) {
-        return teamRepositoryJpa.findTeamMemberByMemberIdAndProjectCodename(member.getId(), project.getCodename()).orElse(null);
+        return teamRepositoryJpa.findByMemberIdAndProjectCodename(member.getId(), project.getCodename()).orElse(null);
     }
 }
