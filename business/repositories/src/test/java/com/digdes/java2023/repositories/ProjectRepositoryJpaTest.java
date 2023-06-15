@@ -10,42 +10,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @ContextConfiguration(classes = {RepositoryConfig.class, ModelConfig.class, ProjectRepositoryJpa.class})
 @DataJpaTest
-@Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ProjectRepositoryJpaTest extends ProjectOperations {
     @Autowired
     private ProjectRepositoryJpa projectRepository;
 
     @Test
-    public void createTest() throws IOException {
+    public void createTest() {
         Project project = genProject();
-        Project cloneProject = copyProject(project);
         project = projectRepository.save(project);
 
-        Assertions.assertNotEquals(null, project.getId());
-        cloneProject.setId(project.getId());
-        Assertions.assertEquals(cloneProject.hashCode(), project.hashCode());
+        Optional<Project> actualProject = projectRepository.findById(project.getId());
+        assert actualProject.isPresent();
+        Assertions.assertEquals(project.hashCode(), actualProject.get().hashCode());
     }
 
     @Test
-    public void updateTest() throws IOException {
+    public void updateTest() {
         Project project = genProject();
         project = projectRepository.save(project);
 
         Project updateProject = genProject();
         updateProject.setId(project.getId());
-        Project cloneUpdateProject = copyProject(updateProject);
         updateProject = projectRepository.save(updateProject);
 
-        Assertions.assertEquals(cloneUpdateProject.hashCode(), updateProject.hashCode());
+        Optional<Project> actualUpdateProject = projectRepository.findById(updateProject.getId());
+        assert actualUpdateProject.isPresent();
+        Assertions.assertEquals(updateProject.hashCode(), actualUpdateProject.hashCode());
     }
 
     @Test

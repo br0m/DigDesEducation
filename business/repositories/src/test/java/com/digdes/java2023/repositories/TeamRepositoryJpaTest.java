@@ -3,6 +3,7 @@ package com.digdes.java2023.repositories;
 import com.digdes.java2023.model.TeamMember;
 import com.digdes.java2023.model.config.ModelConfig;
 import com.digdes.java2023.repositories.config.RepositoryConfig;
+import com.digdes.java2023.repositories.config.RepositoryTestConfig;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,29 +12,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@ContextConfiguration(classes = {RepositoryConfig.class, ModelConfig.class, TeamRepositoryJpa.class, MemberRepositoryJpa.class, ProjectRepositoryJpa.class})
+@ContextConfiguration(classes = {RepositoryConfig.class, RepositoryTestConfig.class, ModelConfig.class, TeamRepositoryJpa.class, MemberRepositoryJpa.class, ProjectRepositoryJpa.class})
 @DataJpaTest
-@Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class TeamRepositoryJpaTest extends Init{
-    @Autowired
-    private TeamRepositoryJpa teamRepository;
+
+    private final TeamRepositoryJpa teamRepository;
+    private final MemberRepositoryJpa memberRepository;
+    private final ProjectRepositoryJpa projectRepository;
+    private TeamMember teamMember;
 
     @Autowired
-    private MemberRepositoryJpa memberRepository;
-
-    @Autowired
-    private ProjectRepositoryJpa projectRepository;
-
-    TeamMember teamMember;
+    public TeamRepositoryJpaTest(TeamRepositoryJpa teamRepository, MemberRepositoryJpa memberRepository, ProjectRepositoryJpa projectRepository) {
+        this.teamRepository = teamRepository;
+        this.memberRepository = memberRepository;
+        this.projectRepository = projectRepository;
+    }
 
     @BeforeEach
     public void getTeamMember() {
@@ -44,11 +43,10 @@ public class TeamRepositoryJpaTest extends Init{
     }
 
     @Test
-    public void addTest() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        TeamMember cloneTeamMember = objectMapper.readValue(objectMapper.writeValueAsString(teamMember), TeamMember.class);
-        Assertions.assertNotEquals(null, teamMember.getId());
-        Assertions.assertEquals(cloneTeamMember.hashCode(), teamMember.hashCode());
+    public void addTest() {
+        Optional<TeamMember> actualTeamMember = teamRepository.findById(teamMember.getId());
+        assert actualTeamMember.isPresent();
+        Assertions.assertEquals(teamMember.hashCode(), actualTeamMember.get().hashCode());
     }
 
     @Test

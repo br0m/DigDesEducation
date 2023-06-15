@@ -4,49 +4,55 @@ import com.digdes.java2023.dto.enums.MemberStatus;
 import com.digdes.java2023.model.Member;
 import com.digdes.java2023.model.config.ModelConfig;
 import com.digdes.java2023.repositories.config.RepositoryConfig;
+import com.digdes.java2023.repositories.config.RepositoryTestConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@ContextConfiguration(classes = {RepositoryConfig.class, ModelConfig.class, MemberRepositoryJpa.class})
+@ContextConfiguration(classes = {RepositoryConfig.class, RepositoryTestConfig.class, ModelConfig.class, MemberRepositoryJpa.class})
 @DataJpaTest
-@Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class MemberRepositoryJpaTest extends MemberOperations {
+
+    private final MemberRepositoryJpa memberRepository;
+
     @Autowired
-    private MemberRepositoryJpa memberRepository;
-
-    @Test
-    public void createTest() throws IOException {
-        Member member = genMember();
-        Member cloneMember = copyMember(member);
-        member = memberRepository.save(member);
-
-        Assertions.assertNotEquals(null, member.getId());
-        cloneMember.setId(member.getId());
-        Assertions.assertEquals(cloneMember.hashCode(), member.hashCode());
+    public MemberRepositoryJpaTest(ObjectMapper objectMapper, MemberRepositoryJpa memberRepository) {
+        super(objectMapper);
+        this.memberRepository = memberRepository;
     }
 
     @Test
-    public void updateTest() throws IOException {
+    public void createTest() {
+        Member member = genMember();
+        member = memberRepository.save(member);
+
+        Optional<Member> actualMember = memberRepository.findById(member.getId());
+        assert actualMember.isPresent();
+        Assertions.assertEquals(member.hashCode(), actualMember.get().hashCode());
+    }
+
+    @Test
+    public void updateTest() {
         Member member = genMember();
         member = memberRepository.save(member);
 
         Member updateMember = genMember();
         updateMember.setId(member.getId());
-        Member cloneUpdateMember = copyMember(updateMember);
         updateMember = memberRepository.save(updateMember);
 
-        Assertions.assertEquals(cloneUpdateMember.hashCode(), updateMember.hashCode());
+        Optional<Member> actualUpdateMember = memberRepository.findById(updateMember.getId());
+        assert actualUpdateMember.isPresent();
+        Assertions.assertEquals(updateMember.hashCode(), actualUpdateMember.hashCode());
     }
 
     @Test
@@ -90,7 +96,6 @@ public class MemberRepositoryJpaTest extends MemberOperations {
         assert findMember.isPresent();
         Assertions.assertEquals(member.hashCode(), findMember.get().hashCode());
     }
-
 
     @Test
     public void findAllByTextAndStatusTest() throws IOException {

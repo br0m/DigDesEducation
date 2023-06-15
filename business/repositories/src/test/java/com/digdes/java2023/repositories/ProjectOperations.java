@@ -3,14 +3,10 @@ package com.digdes.java2023.repositories;
 import com.digdes.java2023.dto.enums.ProjectStatus;
 import com.digdes.java2023.model.Project;
 import org.instancio.Instancio;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 
 import static org.instancio.Select.field;
 
 public class ProjectOperations extends Init{
-    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     protected Project genProject() {
         return Instancio.create(Project.class);
@@ -45,9 +41,5 @@ public class ProjectOperations extends Init{
                 .set(field(Project::getTitle), title)
                 .set(field(Project::getStatus), ProjectStatus.FINISHED)
                 .create();
-    }
-
-    protected Project copyProject(Project project) throws IOException {
-        return objectMapper.readValue(objectMapper.writeValueAsString(project), Project.class);
     }
 }

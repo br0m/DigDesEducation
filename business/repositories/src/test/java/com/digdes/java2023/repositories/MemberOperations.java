@@ -2,16 +2,16 @@ package com.digdes.java2023.repositories;
 
 import com.digdes.java2023.dto.enums.MemberStatus;
 import com.digdes.java2023.model.Member;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.instancio.Instancio;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
 import static org.instancio.Select.field;
-
+@RequiredArgsConstructor
 public class MemberOperations extends Init{
-
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     protected Member genMember() {
         return Instancio.create(Member.class);
