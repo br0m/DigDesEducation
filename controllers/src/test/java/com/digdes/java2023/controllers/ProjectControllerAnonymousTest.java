@@ -1,6 +1,7 @@
 package com.digdes.java2023.controllers;
 
 import com.digdes.java2023.model.config.SecurityConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ContextConfiguration(classes = SecurityConfig.class)
 @WebMvcTest
-public class  ProjectControllerSecurityTest extends ProjectOperations{
+public class ProjectControllerAnonymousTest extends ProjectOperations{
 
     @Autowired
     MockMvc mockMvc;
+    @Autowired
+    public ProjectControllerAnonymousTest(ObjectMapper objectMapper) {
+        super(objectMapper);
+    }
 
     @BeforeEach
     public void getProject() {

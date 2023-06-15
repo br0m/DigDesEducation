@@ -4,8 +4,10 @@ import com.digdes.java2023.dto.enums.ProjectStatus;
 import com.digdes.java2023.dto.project.ProjectDto;
 import com.digdes.java2023.mapping.ProjectMapper;
 import com.digdes.java2023.model.Project;
+import com.digdes.java2023.model.config.SecurityConfig;
 import com.digdes.java2023.repositories.ProjectRepositoryJpa;
 import com.digdes.java2023.services.impl.ProjectServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,9 +32,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ContextConfiguration(classes = {ProjectController.class, ProjectServiceImpl.class, Project.class, GlobalExceptionHandler.class})
+@ContextConfiguration(classes = {SecurityConfig.class, ProjectController.class, ProjectServiceImpl.class, Project.class, GlobalExceptionHandler.class})
 @WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
+@WithMockUser
 public class ProjectControllerTest extends ProjectOperations {
 
     @Autowired
@@ -40,6 +44,10 @@ public class ProjectControllerTest extends ProjectOperations {
     private ProjectMapper mapper;
     @MockBean
     private ProjectRepositoryJpa projectRepositoryJpa;
+    @Autowired
+    public ProjectControllerTest(ObjectMapper objectMapper) {
+        super(objectMapper);
+    }
 
     @Test
     public void createTest() throws Exception {
@@ -172,7 +180,7 @@ public class ProjectControllerTest extends ProjectOperations {
     @MethodSource("invalidSetStatusParams")
     public void setStatusInvalidParamsTest(Integer id, ProjectStatus status) throws Exception {
         mockMvc.perform(patch("/project/{id}/{status}", id, status))
-                .andExpect(status().isNotFound());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test

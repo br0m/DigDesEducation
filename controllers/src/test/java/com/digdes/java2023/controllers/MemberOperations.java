@@ -5,17 +5,18 @@ import com.digdes.java2023.dto.member.CreateMemberDto;
 import com.digdes.java2023.dto.member.MemberDto;
 import com.digdes.java2023.model.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.instancio.Instancio;
 
 import java.util.Random;
 
 import static org.instancio.Select.field;
 
+@RequiredArgsConstructor
 public class MemberOperations {
 
-    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final ObjectMapper objectMapper;
 
     protected static final CreateMemberDto blankFirstNameMember = Instancio.of(CreateMemberDto.class).set(field(CreateMemberDto::getFirstName), " ").create();
     protected static final CreateMemberDto blankLastNameMember = Instancio.of(CreateMemberDto.class).set(field(CreateMemberDto::getLastName), " ").create();

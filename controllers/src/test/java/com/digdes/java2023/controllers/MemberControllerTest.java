@@ -5,8 +5,10 @@ import com.digdes.java2023.dto.member.CreateMemberDto;
 import com.digdes.java2023.dto.member.MemberDto;
 import com.digdes.java2023.mapping.MemberMapper;
 import com.digdes.java2023.model.Member;
+import com.digdes.java2023.model.config.SecurityConfig;
 import com.digdes.java2023.repositories.MemberRepositoryJpa;
 import com.digdes.java2023.services.impl.MemberServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,9 +34,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ContextConfiguration(classes = {MemberController.class, MemberServiceImpl.class, Member.class, GlobalExceptionHandler.class})
+@ContextConfiguration(classes = {SecurityConfig.class, MemberController.class, MemberServiceImpl.class, Member.class, GlobalExceptionHandler.class})
 @WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
+@WithMockUser
 public class MemberControllerTest extends MemberOperations {
 
     @Autowired
@@ -44,6 +48,10 @@ public class MemberControllerTest extends MemberOperations {
     private PasswordEncoder passwordEncoder;
     @MockBean
     private MemberRepositoryJpa memberRepositoryJpa;
+    @Autowired
+    public MemberControllerTest(ObjectMapper objectMapper) {
+        super(objectMapper);
+    }
 
     @Test
     public void createTest() throws Exception {

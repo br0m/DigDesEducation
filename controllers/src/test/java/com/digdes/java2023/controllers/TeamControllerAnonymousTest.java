@@ -2,6 +2,7 @@ package com.digdes.java2023.controllers;
 
 import com.digdes.java2023.model.TeamMember;
 import com.digdes.java2023.model.config.SecurityConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +17,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ContextConfiguration(classes = SecurityConfig.class)
 @WebMvcTest
-public class TeamControllerSecurityTest extends TeamMemberOperations {
+public class TeamControllerAnonymousTest extends TeamMemberOperations {
 
     @Autowired
     MockMvc mockMvc;
+    @Autowired
+    public TeamControllerAnonymousTest(ObjectMapper objectMapper) {
+        super(objectMapper);
+    }
 
     @BeforeEach
     public void getTeamMember() {

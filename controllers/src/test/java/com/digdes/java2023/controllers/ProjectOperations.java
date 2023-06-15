@@ -5,14 +5,17 @@ import com.digdes.java2023.dto.project.ProjectDto;
 import com.digdes.java2023.model.Project;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.instancio.Instancio;
 
 import java.util.Random;
 
 import static org.instancio.Select.field;
 
+@RequiredArgsConstructor
 public class ProjectOperations {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final ObjectMapper objectMapper;
 
     protected static final ProjectDto blankTitleProject = Instancio.of(ProjectDto.class).set(field(ProjectDto::getTitle), " ").create();
     protected static final ProjectDto blankCodenameProject = Instancio.of(ProjectDto.class).set(field(ProjectDto::getCodename), " ").create();

@@ -4,10 +4,12 @@ import com.digdes.java2023.dto.team.TeamDto;
 import com.digdes.java2023.dto.team.TeamMemberDto;
 import com.digdes.java2023.mapping.TeamMapper;
 import com.digdes.java2023.model.TeamMember;
+import com.digdes.java2023.model.config.SecurityConfig;
 import com.digdes.java2023.repositories.MemberRepositoryJpa;
 import com.digdes.java2023.repositories.ProjectRepositoryJpa;
 import com.digdes.java2023.repositories.TeamRepositoryJpa;
 import com.digdes.java2023.services.impl.TeamServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,9 +36,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ContextConfiguration(classes = {TeamController.class, TeamServiceImpl.class, TeamMember.class, GlobalExceptionHandler.class})
+@ContextConfiguration(classes = {SecurityConfig.class, TeamController.class, TeamServiceImpl.class, TeamMember.class, GlobalExceptionHandler.class})
 @WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
+@WithMockUser
 public class TeamControllerTest extends TeamMemberOperations{
 
     @Autowired
@@ -48,6 +52,10 @@ public class TeamControllerTest extends TeamMemberOperations{
     private MemberRepositoryJpa memberRepositoryJpa;
     @MockBean
     private ProjectRepositoryJpa projectRepositoryJpa;
+    @Autowired
+    public TeamControllerTest(ObjectMapper objectMapper) {
+        super(objectMapper);
+    }
 
     @BeforeEach
     public void getTeamMember() {
@@ -134,7 +142,7 @@ public class TeamControllerTest extends TeamMemberOperations{
     @MethodSource("invalidRemoveParams")
     public void removeInvalidParamsTest(String codename, Integer id) throws Exception {
         mockMvc.perform(delete("/team/{codename}/{id}", codename, id))
-                .andExpect(status().isNotFound());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test

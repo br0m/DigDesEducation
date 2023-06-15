@@ -9,8 +9,8 @@ import com.digdes.java2023.model.Member;
 import com.digdes.java2023.model.Project;
 import com.digdes.java2023.model.TeamMember;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.instancio.Instancio;
 
 import java.util.HashMap;
@@ -19,8 +19,10 @@ import java.util.Map;
 
 import static org.instancio.Select.field;
 
+@RequiredArgsConstructor
 public class TeamMemberOperations {
-    private final static ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    private final ObjectMapper objectMapper;
     protected final static TeamMemberDto nullMemberDto = Instancio.of(TeamMemberDto.class).set(field(TeamMemberDto::getMember), null).create();
     protected final static TeamMemberDto nullProjectDto = Instancio.of(TeamMemberDto.class).set(field(TeamMemberDto::getProject), null).create();
     protected final static TeamMemberDto nullRoleDto = Instancio.of(TeamMemberDto.class).set(field(TeamMemberDto::getRole), null).create();
