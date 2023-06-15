@@ -45,6 +45,14 @@ public class Member {
     private String password;
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return id.equals(member.id) && firstName.equals(member.firstName) && lastName.equals(member.lastName) && patronymic.equals(member.patronymic) && jobTitle.equals(member.jobTitle) && account.equals(member.account) && email.equals(member.email) && status == member.status && password.equals(member.password);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, patronymic, jobTitle, account, email, status, password);
     }

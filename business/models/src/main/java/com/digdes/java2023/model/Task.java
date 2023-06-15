@@ -2,13 +2,16 @@ package com.digdes.java2023.model;
 
 import com.digdes.java2023.dto.enums.TaskStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "task")
 public class Task {
@@ -51,4 +54,16 @@ public class Task {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id.equals(task.id) && title.equals(task.title) && description.equals(task.description) && responsibleMember.equals(task.responsibleMember) && hoursCost.equals(task.hoursCost) && deadline.equals(task.deadline) && status == task.status && author.equals(task.author) && creationDate.equals(task.creationDate) && lastchangeDate.equals(task.lastchangeDate) && project.equals(task.project);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, description, responsibleMember, hoursCost, deadline, status, author, creationDate, lastchangeDate, project);
+    }
 }

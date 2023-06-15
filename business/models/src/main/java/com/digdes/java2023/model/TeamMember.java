@@ -29,6 +29,14 @@ public class TeamMember {
     private MemberRole role;
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TeamMember that = (TeamMember) o;
+        return id.equals(that.id) && member.equals(that.member) && project.equals(that.project) && role == that.role;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(id, member, project, role);
     }
