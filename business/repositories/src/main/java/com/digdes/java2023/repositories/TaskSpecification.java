@@ -1,4 +1,4 @@
-package com.digdes.java2023.services.impl;
+package com.digdes.java2023.repositories;
 
 import com.digdes.java2023.dto.enums.TaskStatus;
 import com.digdes.java2023.dto.enums.TaskTimeFindParam;
@@ -29,7 +29,7 @@ public class TaskSpecification {
     }
 
     private Specification<Task> teamMemberEquals(TeamMember teamMember, String paramName) {
-        return teamMember != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(paramName), teamMember.getId()) : Specification.where(null);
+        return teamMember != null ? (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(paramName), teamMember) : Specification.where(null);
     }
 
     private Specification<Task> statusEquals(TaskStatus status) {
