@@ -6,14 +6,14 @@ import com.digdes.java2023.services.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CommonsLog
+@Log4j2
 @RequestMapping("/member")
 @Tag(name = "MemberController", description = "Контроллер сотрудников")
 public class MemberController {
