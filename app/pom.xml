@@ -10,7 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>app</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
@@ -18,5 +17,15 @@
             <version>${revision}${changelist}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>project-exec</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
