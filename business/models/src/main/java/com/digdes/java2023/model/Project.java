@@ -4,6 +4,8 @@ import com.digdes.java2023.dto.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @Builder
@@ -30,4 +32,16 @@ public class Project {
     @Column(name = "status", nullable = false, length = 20)
     private ProjectStatus status;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return id.equals(project.id) && codename.equals(project.codename) && title.equals(project.title) && description.equals(project.description) && status == project.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, codename, title, description, status);
+    }
 }

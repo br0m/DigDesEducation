@@ -4,6 +4,7 @@ import com.digdes.java2023.dto.enums.TaskStatus;
 import com.digdes.java2023.dto.enums.TaskTimeFindParam;
 import com.digdes.java2023.dto.team.TeamMemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.time.ZoneOffset;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Schema(description = "DTO для поиска задач")
 public class FindTaskDto {
 

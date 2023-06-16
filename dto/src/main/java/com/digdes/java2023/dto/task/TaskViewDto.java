@@ -1,6 +1,7 @@
 package com.digdes.java2023.dto.task;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "DTO задачи с генерируемыми полями даты/времени")
 public class TaskViewDto extends TaskDto{
 
@@ -18,5 +20,5 @@ public class TaskViewDto extends TaskDto{
     private LocalDateTime creationDate;
 
     @Schema(description = "Дата последнего изменения")
-    private LocalDateTime lastChangeDate;
+    private LocalDateTime lastchangeDate;
 }

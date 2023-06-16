@@ -4,12 +4,14 @@ import com.digdes.java2023.dto.enums.MemberRole;
 import com.digdes.java2023.dto.member.MemberDto;
 import com.digdes.java2023.dto.project.ProjectDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Map;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Schema(description = "DTO команды проекта")
 public class TeamDto {
 

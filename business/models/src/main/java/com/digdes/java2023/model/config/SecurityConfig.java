@@ -1,4 +1,4 @@
-package com.digdes.java2023.main.security;
+package com.digdes.java2023.model.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

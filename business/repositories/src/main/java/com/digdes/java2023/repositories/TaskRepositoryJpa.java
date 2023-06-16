@@ -2,6 +2,7 @@ package com.digdes.java2023.repositories;
 
 
 import com.digdes.java2023.dto.enums.TaskStatus;
+import com.digdes.java2023.model.Project;
 import com.digdes.java2023.model.Task;
 import com.digdes.java2023.model.TeamMember;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,9 +19,9 @@ import java.time.LocalDateTime;
 public interface TaskRepositoryJpa extends JpaRepository<Task, Integer>, JpaSpecificationExecutor<Task> {
 
     @Transactional
-    @Modifying
-    @Query("update Task t set t.title = :title, t.description = :description, t.responsibleMember = :responsibleMember, t.hoursCost = :hoursCost, t.deadline = :deadline, t.author = :author, t.lastchangeDate = :lastchangeDate where t.id = :id")
-    int update(@Param("title") String title, @Param("description") String description, @Param("responsibleMember") TeamMember responsibleMember, @Param("hoursCost") Integer hoursCost, @Param("deadline") LocalDateTime deadline, @Param("author") TeamMember author, @Param("lastchangeDate") LocalDateTime lastchangeDate, @Param("id") Integer id);
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update Task t set t.title = :title, t.description = :description, t.responsibleMember = :responsibleMember, t.hoursCost = :hoursCost, t.deadline = :deadline, t.author = :author, t.lastchangeDate = :lastchangeDate, t.project = :project where t.id = :id")
+    int update(@Param("title") String title, @Param("description") String description, @Param("responsibleMember") TeamMember responsibleMember, @Param("hoursCost") Integer hoursCost, @Param("deadline") LocalDateTime deadline, @Param("author") TeamMember author, @Param("lastchangeDate") LocalDateTime lastchangeDate, @Param("project") Project project, @Param("id") Integer id);
 
     @Transactional
     @Modifying
